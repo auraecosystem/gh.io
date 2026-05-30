@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@19.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@19.2.0/client"
+      }
+    }
+  </script>
+  <script type="module" src="https://esm.sh/tsx"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    import { createRoot } from "react-dom/client"
+    createRoot(root).render(<h1>Hello, World!</h1>)
+  </script>
+</body>
+</html>
