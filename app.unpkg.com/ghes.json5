@@ -1,0 +1,1527 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "22.0.0",
+    "title": "GitHub's official OpenAPI spec + Octokit extension",
+    "description": "OpenAPI specs from https://github.com/github/rest-api-description with the 'x-octokit' extension required by the Octokit SDKs",
+    "license": {
+      "name": "MIT",
+      "url": "https://spdx.org/licenses/MIT"
+    },
+    "termsOfService": "https://docs.github.com/articles/github-terms-of-service",
+    "contact": {
+      "name": "Support",
+      "url": "https://github.com/octokit/openapi"
+    },
+    "x-github-plan": "ghes",
+    "x-github-release": 3.19
+  },
+  "tags": [
+    {
+      "name": "actions",
+      "description": "Endpoints to manage GitHub Actions using the REST API."
+    },
+    {
+      "name": "activity",
+      "description": "Activity APIs provide access to notifications, subscriptions, and timelines."
+    },
+    {
+      "name": "apps",
+      "description": "Information for integrations and installations."
+    },
+    {
+      "name": "billing",
+      "description": "Monitor charges and usage from Actions and Packages."
+    },
+    {
+      "name": "checks",
+      "description": "Rich interactions with checks run by your integrations."
+    },
+    {
+      "name": "code-scanning",
+      "description": "Retrieve code scanning alerts from a repository."
+    },
+    {
+      "name": "codes-of-conduct",
+      "description": "Insight into codes of conduct for your communities."
+    },
+    {
+      "name": "emojis",
+      "description": "List emojis available to use on GitHub."
+    },
+    {
+      "name": "dependabot",
+      "description": "Endpoints to manage Dependabot."
+    },
+    {
+      "name": "dependency-graph",
+      "description": "Endpoints to access Dependency Graph features."
+    },
+    {
+      "name": "gists",
+      "description": "View, modify your gists."
+    },
+    {
+      "name": "git",
+      "description": "Raw Git functionality."
+    },
+    {
+      "name": "gitignore",
+      "description": "View gitignore templates"
+    },
+    {
+      "name": "issues",
+      "description": "Interact with GitHub Issues."
+    },
+    {
+      "name": "licenses",
+      "description": "View various OSS licenses."
+    },
+    {
+      "name": "markdown",
+      "description": "Render GitHub flavored Markdown"
+    },
+    {
+      "name": "merge-queue",
+      "description": "Interact with GitHub Merge Queues."
+    },
+    {
+      "name": "meta",
+      "description": "Endpoints that give information about the API."
+    },
+    {
+      "name": "migrations",
+      "description": "Move projects to or from GitHub."
+    },
+    {
+      "name": "oidc",
+      "description": "Endpoints to manage GitHub OIDC configuration using the REST API."
+    },
+    {
+      "name": "orgs",
+      "description": "Interact with organizations."
+    },
+    {
+      "name": "packages",
+      "description": "Manage packages for authenticated users and organizations."
+    },
+    {
+      "name": "pulls",
+      "description": "Interact with GitHub Pull Requests."
+    },
+    {
+      "name": "rate-limit",
+      "description": "Check your current rate limit status."
+    },
+    {
+      "name": "reactions",
+      "description": "Interact with reactions to various GitHub entities."
+    },
+    {
+      "name": "repos",
+      "description": "Interact with GitHub Repos."
+    },
+    {
+      "name": "search",
+      "description": "Search for specific items on GitHub."
+    },
+    {
+      "name": "secret-scanning",
+      "description": "Retrieve secret scanning alerts from a repository."
+    },
+    {
+      "name": "teams",
+      "description": "Interact with GitHub Teams."
+    },
+    {
+      "name": "users",
+      "description": "Interact with and view information about users and also current user."
+    },
+    {
+      "name": "scim",
+      "description": "Provisioning of GitHub organization membership for SCIM-enabled providers."
+    },
+    {
+      "name": "enterprise-admin",
+      "description": "Enterprise Administration"
+    },
+    {
+      "name": "oauth-authorizations",
+      "description": "OAuth Authorizations API"
+    },
+    {
+      "name": "security-advisories",
+      "description": "Security Advisories API"
+    },
+    {
+      "name": "code-security",
+      "description": "Endpoints to manage code security using the REST API."
+    },
+    {
+      "name": "private-registries",
+      "description": "Manage private registry configurations."
+    },
+    {
+      "name": "credentials",
+      "description": "Revoke compromised or leaked GitHub credentials."
+    }
+  ],
+  "servers": [
+    {
+      "url": "{protocol}://{hostname}/api/v3",
+      "variables": {
+        "hostname": {
+          "description": "Self-hosted Enterprise Server hostname",
+          "default": "HOSTNAME"
+        },
+        "protocol": {
+          "description": "Self-hosted Enterprise Server protocol",
+          "default": "http"
+        }
+      }
+    }
+  ],
+  "externalDocs": {
+    "description": "GitHub Enterprise Developer Docs",
+    "url": "https://docs.github.com/enterprise-server@3.19/rest/"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "GitHub API Root",
+        "description": "Get Hypermedia links to resources accessible in GitHub's REST API",
+        "tags": [
+          "meta"
+        ],
+        "operationId": "meta/root",
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/root"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/root"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": true,
+          "category": "meta",
+          "subcategory": "meta"
+        },
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/meta/meta#github-api-root"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/hooks": {
+      "get": {
+        "summary": "List global webhooks",
+        "description": "",
+        "operationId": "enterprise-admin/list-global-webhooks",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/global-webhooks#list-global-webhooks"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/per-page"
+          },
+          {
+            "$ref": "#/components/parameters/page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/global-hook"
+                  }
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/global-hook-items"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "$ref": "#/components/headers/link"
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "global-webhooks"
+        },
+        "x-octokit": {}
+      },
+      "post": {
+        "summary": "Create a global webhook",
+        "description": "",
+        "operationId": "enterprise-admin/create-global-webhook",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/global-webhooks#create-a-global-webhook"
+        },
+        "responses": {
+          "201": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/global-hook"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/global-hook"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Must be passed as \"web\"."
+                  },
+                  "config": {
+                    "type": "object",
+                    "description": "Key/value pairs to provide settings for this webhook.",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "description": "The URL to which the payloads will be delivered."
+                      },
+                      "content_type": {
+                        "type": "string",
+                        "description": "The media type used to serialize the payloads. Supported values include `json` and `form`. The default is `form`."
+                      },
+                      "secret": {
+                        "type": "string",
+                        "description": "If provided, the `secret` will be used as the `key` to generate the HMAC hex digest value in the [`X-Hub-Signature`](https://docs.github.com/enterprise-server@3.19/webhooks/event-payloads/#delivery-headers) header."
+                      },
+                      "insecure_ssl": {
+                        "type": "string",
+                        "description": "Determines whether the SSL certificate of the host for `url` will be verified when delivering payloads. Supported values include `0` (verification is performed) and `1` (verification is not performed). The default is `0`. **We strongly recommend not setting this to `1` as you are subject to man-in-the-middle and other attacks.**"
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ]
+                  },
+                  "events": {
+                    "type": "array",
+                    "description": "The [events](https://docs.github.com/enterprise-server@3.19/webhooks/event-payloads) that trigger this webhook. A global webhook can be triggered by `user` and `organization` events. Default: `user` and `organization`.",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "Determines if notifications are sent when the webhook is triggered. Set to `true` to send notifications.",
+                    "default": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "config"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "name": "web",
+                    "events": [
+                      "organization",
+                      "user"
+                    ],
+                    "config": {
+                      "url": "https://example.com/webhook",
+                      "content_type": "json",
+                      "secret": "secret"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "global-webhooks"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/hooks/{hook_id}": {
+      "get": {
+        "summary": "Get a global webhook",
+        "description": "",
+        "operationId": "enterprise-admin/get-global-webhook",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/global-webhooks#get-a-global-webhook"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/hook-id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/global-hook"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/global-hook"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "global-webhooks"
+        },
+        "x-octokit": {}
+      },
+      "patch": {
+        "summary": "Update a global webhook",
+        "description": "Parameters that are not provided will be overwritten with the default value or removed if no default exists.",
+        "operationId": "enterprise-admin/update-global-webhook",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/global-webhooks#update-a-global-webhook"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/hook-id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/global-hook-2"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/global-hook-2"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "config": {
+                    "type": "object",
+                    "description": "Key/value pairs to provide settings for this webhook.",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "description": "The URL to which the payloads will be delivered."
+                      },
+                      "content_type": {
+                        "type": "string",
+                        "description": "The media type used to serialize the payloads. Supported values include `json` and `form`. The default is `form`."
+                      },
+                      "secret": {
+                        "type": "string",
+                        "description": "If provided, the `secret` will be used as the `key` to generate the HMAC hex digest value in the [`X-Hub-Signature`](https://docs.github.com/enterprise-server@3.19/webhooks/event-payloads/#delivery-headers) header."
+                      },
+                      "insecure_ssl": {
+                        "type": "string",
+                        "description": "Determines whether the SSL certificate of the host for `url` will be verified when delivering payloads. Supported values include `0` (verification is performed) and `1` (verification is not performed). The default is `0`. **We strongly recommend not setting this to `1` as you are subject to man-in-the-middle and other attacks.**"
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ]
+                  },
+                  "events": {
+                    "type": "array",
+                    "description": "The [events](https://docs.github.com/enterprise-server@3.19/webhooks/event-payloads) that trigger this webhook. A global webhook can be triggered by `user` and `organization` events. Default: `user` and `organization`.",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "Determines if notifications are sent when the webhook is triggered. Set to `true` to send notifications.",
+                    "default": true
+                  }
+                }
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "events": [
+                      "organization"
+                    ],
+                    "config": {
+                      "url": "https://example.com/webhook"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "global-webhooks"
+        },
+        "x-octokit": {}
+      },
+      "delete": {
+        "summary": "Delete a global webhook",
+        "description": "",
+        "operationId": "enterprise-admin/delete-global-webhook",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/global-webhooks#delete-a-global-webhook"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/hook-id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Response"
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "global-webhooks"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/hooks/{hook_id}/pings": {
+      "post": {
+        "summary": "Ping a global webhook",
+        "description": "This will trigger a [ping event](https://docs.github.com/enterprise-server@3.19/webhooks/#ping-event) to be sent to the webhook.",
+        "operationId": "enterprise-admin/ping-global-webhook",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/global-webhooks#ping-a-global-webhook"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/hook-id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Response"
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "global-webhooks"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/keys": {
+      "get": {
+        "summary": "List public keys",
+        "description": "",
+        "operationId": "enterprise-admin/list-public-keys",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/users#list-public-keys"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/per-page"
+          },
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/direction"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created",
+                "updated",
+                "accessed"
+              ],
+              "default": "created"
+            }
+          },
+          {
+            "name": "since",
+            "description": "Only show public keys accessed after the given time.",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/public-key-full"
+                  }
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/enterprise-public-key-items"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Link": {
+                "$ref": "#/components/headers/link"
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "users"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/keys/{key_ids}": {
+      "delete": {
+        "summary": "Delete a public key",
+        "description": "",
+        "operationId": "enterprise-admin/delete-public-key",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/users#delete-a-public-key"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/key-ids"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Response"
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "users"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/ldap/teams/{team_id}/mapping": {
+      "patch": {
+        "summary": "Update LDAP mapping for a team",
+        "description": "Updates the [distinguished name](https://www.ldap.com/ldap-dns-and-rdns) (DN) of the LDAP entry to map to a team. [LDAP synchronization](https://docs.github.com/enterprise-server@3.19/admin/identity-and-access-management/using-ldap-for-enterprise-iam/using-ldap#enabling-ldap-sync) must be enabled to map LDAP entries to a team. Use the [Create a team](https://docs.github.com/enterprise-server@3.19/rest/teams/teams/#create-a-team) endpoint to create a team with LDAP mapping.",
+        "operationId": "enterprise-admin/update-ldap-mapping-for-team",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/ldap#update-ldap-mapping-for-a-team"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/team-id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ldap-mapping-team"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/ldap-mapping-team"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ldap_dn": {
+                    "$ref": "#/components/schemas/ldap-dn"
+                  }
+                },
+                "required": [
+                  "ldap_dn"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ldap_dn": "cn=Enterprise Ops,ou=teams,dc=github,dc=com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "ldap"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/ldap/teams/{team_id}/sync": {
+      "post": {
+        "summary": "Sync LDAP mapping for a team",
+        "description": "Note that this API call does not automatically initiate an LDAP sync. Rather, if a `201` is returned, the sync job is queued successfully, and is performed when the instance is ready.",
+        "operationId": "enterprise-admin/sync-ldap-mapping-for-team",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/ldap#sync-ldap-mapping-for-a-team"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/team-id"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "status": "queued"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "ldap"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/ldap/users/{username}/mapping": {
+      "patch": {
+        "summary": "Update LDAP mapping for a user",
+        "description": "",
+        "operationId": "enterprise-admin/update-ldap-mapping-for-user",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/ldap#update-ldap-mapping-for-a-user"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/username"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ldap-mapping-user"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/ldap-mapping-user"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ldap_dn": {
+                    "type": "string",
+                    "description": "The [distinguished name](https://www.ldap.com/ldap-dns-and-rdns) (DN) of the LDAP entry to map to a team."
+                  }
+                },
+                "required": [
+                  "ldap_dn"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "ldap_dn": "uid=asdf,ou=users,dc=github,dc=com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "ldap"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/ldap/users/{username}/sync": {
+      "post": {
+        "summary": "Sync LDAP mapping for a user",
+        "description": "Note that this API call does not automatically initiate an LDAP sync. Rather, if a `201` is returned, the sync job is queued successfully, and is performed when the instance is ready.",
+        "operationId": "enterprise-admin/sync-ldap-mapping-for-user",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/ldap#sync-ldap-mapping-for-a-user"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/username"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "status": "queued"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "ldap"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/organizations": {
+      "post": {
+        "summary": "Create an organization",
+        "description": "",
+        "operationId": "enterprise-admin/create-org",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/orgs#create-an-organization"
+        },
+        "responses": {
+          "201": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/organization-simple"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/organization-simple"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "login": {
+                    "type": "string",
+                    "description": "The organization's username."
+                  },
+                  "admin": {
+                    "type": "string",
+                    "description": "The login of the user who will manage this organization."
+                  },
+                  "profile_name": {
+                    "type": "string",
+                    "description": "The organization's display name."
+                  }
+                },
+                "required": [
+                  "login",
+                  "admin"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "login": "github",
+                    "profile_name": "GitHub, Inc.",
+                    "admin": "monalisaoctocat"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "orgs"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/organizations/{org}": {
+      "patch": {
+        "summary": "Update an organization name",
+        "description": "",
+        "operationId": "enterprise-admin/update-org-name",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/orgs#update-an-organization-name"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/org"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "default": {
+                    "value": {
+                      "message": "Job queued to rename organization. It may take a few minutes to complete.",
+                      "url": "https://<hostname>/api/v3/organizations/1"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "login": {
+                    "type": "string",
+                    "description": "The organization's new name."
+                  }
+                },
+                "required": [
+                  "login"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "login": "the-new-octocats"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "orgs"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/pre-receive-environments": {
+      "get": {
+        "summary": "List pre-receive environments",
+        "description": "",
+        "operationId": "enterprise-admin/list-pre-receive-environments",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/pre-receive-environments#list-pre-receive-environments"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/per-page"
+          },
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/direction"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created",
+                "updated",
+                "name"
+              ],
+              "default": "created"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/pre-receive-environment"
+                  }
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/pre-receive-environment-items"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "pre-receive-environments"
+        },
+        "x-octokit": {}
+      },
+      "post": {
+        "summary": "Create a pre-receive environment",
+        "description": "",
+        "operationId": "enterprise-admin/create-pre-receive-environment",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/pre-receive-environments#create-a-pre-receive-environment"
+        },
+        "responses": {
+          "201": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pre-receive-environment"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/pre-receive-environment"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The new pre-receive environment's name."
+                  },
+                  "image_url": {
+                    "type": "string",
+                    "description": "URL from which to download a tarball of this environment."
+                  }
+                },
+                "required": [
+                  "name",
+                  "image_url"
+                ]
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "name": "DevTools Hook Env",
+                    "image_url": "https://my_file_server/path/to/devtools_env.tar.gz"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "pre-receive-environments"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/pre-receive-environments/{pre_receive_environment_id}": {
+      "get": {
+        "summary": "Get a pre-receive environment",
+        "description": "",
+        "operationId": "enterprise-admin/get-pre-receive-environment",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/pre-receive-environments#get-a-pre-receive-environment"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/pre-receive-environment-id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pre-receive-environment"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/pre-receive-environment"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "pre-receive-environments"
+        },
+        "x-octokit": {}
+      },
+      "patch": {
+        "summary": "Update a pre-receive environment",
+        "description": "You cannot modify the default environment. If you attempt to modify the default environment, you will receive a `422 Unprocessable Entity` response.",
+        "operationId": "enterprise-admin/update-pre-receive-environment",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/pre-receive-environments#update-a-pre-receive-environment"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/pre-receive-environment-id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pre-receive-environment"
+                },
+                "examples": {
+                  "default-response": {
+                    "$ref": "#/components/examples/pre-receive-environment-default-response"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Client Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "resource": {
+                            "type": "string"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "client-errors": {
+                    "value": {
+                      "message": "Validation Failed",
+                      "errors": [
+                        {
+                          "resource": "PreReceiveEnvironment",
+                          "code": "custom",
+                          "message": "Cannot modify or delete the default environment"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "This pre-receive environment's new name."
+                  },
+                  "image_url": {
+                    "type": "string",
+                    "description": "URL from which to download a tarball of this environment."
+                  }
+                }
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "name": "DevTools Hook Env",
+                    "image_url": "https://my_file_server/path/to/devtools_env.tar.gz"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "pre-receive-environments"
+        },
+        "x-octokit": {}
+      },
+      "delete": {
+        "summary": "Delete a pre-receive environment",
+        "description": "If you attempt to delete an environment that cannot be deleted, you will receive a `422 Unprocessable Entity` response.\n\nThe possible error messages are:\n\n*   _Cannot modify or delete the default environment_\n*   _Cannot delete environment that has hooks_\n*   _Cannot delete environment when download is in progress_",
+        "operationId": "enterprise-admin/delete-pre-receive-environment",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/pre-receive-environments#delete-a-pre-receive-environment"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/pre-receive-environment-id"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Response"
+          },
+          "422": {
+            "description": "Client Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "resource": {
+                            "type": "string"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "client-errors": {
+                    "value": {
+                      "message": "Validation Failed",
+                      "errors": [
+                        {
+                          "resource": "PreReceiveEnvironment",
+                          "code": "custom",
+                          "message": "Cannot modify or delete the default environment"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "enterprise-admin",
+          "subcategory": "pre-receive-environments"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/admin/pre-receive-environments/{pre_receive_environment_id}/downloads": {
+      "post": {
+        "summary": "Start a pre-receive environment download",
+        "description": "Triggers a new download of the environment tarball from the environment's `image_url`. When the download is finished, the newly downloaded tarball will overwrite the existing environment.\n\nIf a download cannot be triggered, you will receive a `422 Unprocessable Entity` response.\n\nThe possible error messages are:\n\n* _Cannot modify or delete the default environment_\n* _Can not start a new download when a download is in progress_",
+        "operationId": "enterprise-admin/start-pre-receive-environment-download",
+        "tags": [
+          "enterprise-admin"
+        ],
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.19/rest/enterprise-admin/pre-receive-environments#start-a-pre-receive-environment-download"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/pre-receive-environment-id"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pre-receive-environment-download-status"
+                },
+                "examples": {
+                  "default-response": {
+                    "$ref": "#/components/examples/pre-receive-environment-download-status-default-response"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Client Errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "resource": {
+                            "type": "string"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
