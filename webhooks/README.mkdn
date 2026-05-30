@@ -1,4 +1,4 @@
-# @octokit/webhooks
+# @web4hub/webhooks
 
 > GitHub webhook events toolset for Node.js
 
