@@ -1,0 +1,13 @@
+
+  "name": "pkg",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.cjs"
+    },
+    "./subpath": {
+      "import": "./subpath/index.mjs",
+      "require": "./subpath/index.cjs"
+    }
+  }
+}
