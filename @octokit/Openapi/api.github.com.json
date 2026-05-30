@@ -1,0 +1,1314 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "22.0.0",
+    "title": "GitHub's official OpenAPI spec + Octokit extension",
+    "description": "OpenAPI specs from https://github.com/github/rest-api-description with the 'x-octokit' extension required by the Octokit SDKs",
+    "license": {
+      "name": "MIT",
+      "url": "https://spdx.org/licenses/MIT"
+    },
+    "termsOfService": "https://docs.github.com/articles/github-terms-of-service",
+    "contact": {
+      "name": "Support",
+      "url": "https://github.com/octokit/openapi"
+    },
+    "x-github-plan": "api.github.com"
+  },
+  "tags": [
+    {
+      "name": "actions",
+      "description": "Endpoints to manage GitHub Actions using the REST API."
+    },
+    {
+      "name": "activity",
+      "description": "Activity APIs provide access to notifications, subscriptions, and timelines."
+    },
+    {
+      "name": "apps",
+      "description": "Information for integrations and installations."
+    },
+    {
+      "name": "billing",
+      "description": "Monitor charges and usage from Actions and Packages."
+    },
+    {
+      "name": "checks",
+      "description": "Rich interactions with checks run by your integrations."
+    },
+    {
+      "name": "code-scanning",
+      "description": "Retrieve code scanning alerts from a repository."
+    },
+    {
+      "name": "codes-of-conduct",
+      "description": "Insight into codes of conduct for your communities."
+    },
+    {
+      "name": "emojis",
+      "description": "List emojis available to use on GitHub."
+    },
+    {
+      "name": "dependabot",
+      "description": "Endpoints to manage Dependabot."
+    },
+    {
+      "name": "dependency-graph",
+      "description": "Endpoints to access Dependency Graph features."
+    },
+    {
+      "name": "gists",
+      "description": "View, modify your gists."
+    },
+    {
+      "name": "git",
+      "description": "Raw Git functionality."
+    },
+    {
+      "name": "gitignore",
+      "description": "View gitignore templates"
+    },
+    {
+      "name": "issues",
+      "description": "Interact with GitHub Issues."
+    },
+    {
+      "name": "licenses",
+      "description": "View various OSS licenses."
+    },
+    {
+      "name": "markdown",
+      "description": "Render GitHub flavored Markdown"
+    },
+    {
+      "name": "merge-queue",
+      "description": "Interact with GitHub Merge Queues."
+    },
+    {
+      "name": "meta",
+      "description": "Endpoints that give information about the API."
+    },
+    {
+      "name": "migrations",
+      "description": "Move projects to or from GitHub."
+    },
+    {
+      "name": "oidc",
+      "description": "Endpoints to manage GitHub OIDC configuration using the REST API."
+    },
+    {
+      "name": "orgs",
+      "description": "Interact with organizations."
+    },
+    {
+      "name": "packages",
+      "description": "Manage packages for authenticated users and organizations."
+    },
+    {
+      "name": "pulls",
+      "description": "Interact with GitHub Pull Requests."
+    },
+    {
+      "name": "rate-limit",
+      "description": "Check your current rate limit status."
+    },
+    {
+      "name": "reactions",
+      "description": "Interact with reactions to various GitHub entities."
+    },
+    {
+      "name": "repos",
+      "description": "Interact with GitHub Repos."
+    },
+    {
+      "name": "search",
+      "description": "Search for specific items on GitHub."
+    },
+    {
+      "name": "secret-scanning",
+      "description": "Retrieve secret scanning alerts from a repository."
+    },
+    {
+      "name": "teams",
+      "description": "Interact with GitHub Teams."
+    },
+    {
+      "name": "users",
+      "description": "Interact with and view information about users and also current user."
+    },
+    {
+      "name": "codespaces",
+      "description": "Endpoints to manage Codespaces using the REST API."
+    },
+    {
+      "name": "copilot",
+      "description": "Endpoints to manage Copilot using the REST API."
+    },
+    {
+      "name": "security-advisories",
+      "description": "Manage security advisories."
+    },
+    {
+      "name": "interactions",
+      "description": "Owner or admin management of users interactions."
+    },
+    {
+      "name": "classroom",
+      "description": "Interact with GitHub Classroom."
+    },
+    {
+      "name": "desktop",
+      "description": "Desktop specific endpoints."
+    },
+    {
+      "name": "enterprise-teams",
+      "description": "Endpoints to manage GitHub Enterprise Teams."
+    },
+    {
+      "name": "enterprise-team-memberships",
+      "description": "Endpoints to manage GitHub Enterprise Team memberships."
+    },
+    {
+      "name": "enterprise-team-organizations",
+      "description": "Endpoints to manage GitHub Enterprise Team organization assignments."
+    },
+    {
+      "name": "code-security",
+      "description": "Endpoints to manage Code security using the REST API."
+    },
+    {
+      "name": "private-registries",
+      "description": "Manage private registry configurations."
+    },
+    {
+      "name": "hosted-compute",
+      "description": "Manage hosted compute networking resources."
+    },
+    {
+      "name": "credentials",
+      "description": "Revoke compromised or leaked GitHub credentials."
+    },
+    {
+      "name": "campaigns",
+      "description": "Endpoints to manage campaigns via the REST API."
+    },
+    {
+      "name": "projects",
+      "description": "Endpoints to manage Projects using the REST API."
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://api.github.com"
+    }
+  ],
+  "externalDocs": {
+    "description": "GitHub v3 REST API",
+    "url": "https://docs.github.com/rest/"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "GitHub API Root",
+        "description": "Get Hypermedia links to resources accessible in GitHub's REST API",
+        "tags": [
+          "meta"
+        ],
+        "operationId": "meta/root",
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/root"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/root"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": true,
+          "category": "meta",
+          "subcategory": "meta"
+        },
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/meta/meta#github-api-root"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/advisories": {
+      "get": {
+        "summary": "List global security advisories",
+        "description": "Lists all global security advisories that match the specified parameters. If no other parameters are defined, the request will return only GitHub-reviewed advisories that are not malware.\n\nBy default, all responses will exclude advisories for malware, because malware are not standard vulnerabilities. To list advisories for malware, you must include the `type` parameter in your request, with the value `malware`. For more information about the different types of security advisories, see \"[About the GitHub Advisory database](https://docs.github.com/code-security/security-advisories/global-security-advisories/about-the-github-advisory-database#about-types-of-security-advisories).\"",
+        "tags": [
+          "security-advisories"
+        ],
+        "operationId": "security-advisories/list-global-advisories",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/security-advisories/global-advisories#list-global-security-advisories"
+        },
+        "parameters": [
+          {
+            "name": "ghsa_id",
+            "in": "query",
+            "description": "If specified, only advisories with this GHSA (GitHub Security Advisory) identifier will be returned.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "If specified, only advisories of this type will be returned. By default, a request with no other parameters defined will only return reviewed advisories that are not malware.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "reviewed",
+                "malware",
+                "unreviewed"
+              ],
+              "default": "reviewed"
+            }
+          },
+          {
+            "name": "cve_id",
+            "description": "If specified, only advisories with this CVE (Common Vulnerabilities and Exposures) identifier will be returned.",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ecosystem",
+            "in": "query",
+            "description": "If specified, only advisories for these ecosystems will be returned.",
+            "schema": {
+              "$ref": "#/components/schemas/security-advisory-ecosystems"
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "description": "If specified, only advisories with these severities will be returned.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "low",
+                "medium",
+                "high",
+                "critical"
+              ]
+            }
+          },
+          {
+            "name": "cwes",
+            "in": "query",
+            "description": "If specified, only advisories with these Common Weakness Enumerations (CWEs) will be returned.\n\nExample: `cwes=79,284,22` or `cwes[]=79&cwes[]=284&cwes[]=22`",
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "is_withdrawn",
+            "in": "query",
+            "description": "Whether to only return advisories that have been withdrawn.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "affects",
+            "in": "query",
+            "description": "If specified, only return advisories that affect any of `package` or `package@version`. A maximum of 1000 packages can be specified.\nIf the query parameter causes the URL to exceed the maximum URL length supported by your client, you must specify fewer packages.\n\nExample: `affects=package1,package2@1.0.0,package3@2.0.0` or `affects[]=package1&affects[]=package2@1.0.0`",
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "maxItems": 1000,
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "published",
+            "in": "query",
+            "description": "If specified, only return advisories that were published on a date or date range.\n\nFor more information on the syntax of the date range, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "updated",
+            "in": "query",
+            "description": "If specified, only return advisories that were updated on a date or date range.\n\nFor more information on the syntax of the date range, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "modified",
+            "description": "If specified, only show advisories that were updated or published on a date or date range.\n\nFor more information on the syntax of the date range, see \"[Understanding the search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax#query-for-dates).\"",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "epss_percentage",
+            "in": "query",
+            "description": "If specified, only return advisories that have an EPSS percentage score that matches the provided value.\nThe EPSS percentage represents the likelihood of a CVE being exploited.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "epss_percentile",
+            "in": "query",
+            "description": "If specified, only return advisories that have an EPSS percentile score that matches the provided value.\nThe EPSS percentile represents the relative rank of the CVE's likelihood of being exploited compared to other CVEs.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/pagination-before"
+          },
+          {
+            "$ref": "#/components/parameters/pagination-after"
+          },
+          {
+            "$ref": "#/components/parameters/direction"
+          },
+          {
+            "name": "per_page",
+            "description": "The number of results per page (max 100). For more information, see \"[Using pagination in the REST API](https://docs.github.com/rest/using-the-rest-api/using-pagination-in-the-rest-api).\"",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30
+            }
+          },
+          {
+            "name": "sort",
+            "description": "The property to sort the results by.",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "updated",
+                "published",
+                "epss_percentage",
+                "epss_percentile"
+              ],
+              "default": "published"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/global-advisory"
+                  }
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/global-advisory-items"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/validation_failed_simple"
+          },
+          "429": {
+            "description": "Too many requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/basic-error"
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": true,
+          "category": "security-advisories",
+          "subcategory": "global-advisories"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/advisories/{ghsa_id}": {
+      "get": {
+        "summary": "Get a global security advisory",
+        "description": "Gets a global security advisory using its GitHub Security Advisory (GHSA) identifier.",
+        "tags": [
+          "security-advisories"
+        ],
+        "operationId": "security-advisories/get-global-advisory",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/security-advisories/global-advisories#get-a-global-security-advisory"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ghsa_id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/global-advisory"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/global-advisory"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/not_found"
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": true,
+          "category": "security-advisories",
+          "subcategory": "global-advisories"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/app": {
+      "get": {
+        "summary": "Get the authenticated app",
+        "description": "Returns the GitHub App associated with the authentication credentials used. To see how many app installations are associated with this GitHub App, see the `installations_count` in the response. For more details about your app's installations, see the \"[List installations for the authenticated app](https://docs.github.com/rest/apps/apps#list-installations-for-the-authenticated-app)\" endpoint.\n\nYou must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.",
+        "tags": [
+          "apps"
+        ],
+        "operationId": "apps/get-authenticated",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/apps/apps#get-the-authenticated-app"
+        },
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/integration"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/integration"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": true,
+          "category": "apps",
+          "subcategory": "apps"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/app-manifests/{code}/conversions": {
+      "post": {
+        "summary": "Create a GitHub App from a manifest",
+        "description": "Use this endpoint to complete the handshake necessary when implementing the [GitHub App Manifest flow](https://docs.github.com/apps/building-github-apps/creating-github-apps-from-a-manifest/). When you create a GitHub App with the manifest flow, you receive a temporary `code` used to retrieve the GitHub App's `id`, `pem` (private key), and `webhook_secret`.",
+        "tags": [
+          "apps"
+        ],
+        "operationId": "apps/create-from-manifest",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/apps/apps#create-a-github-app-from-a-manifest"
+        },
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/integration"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "client_id": {
+                          "type": "string"
+                        },
+                        "client_secret": {
+                          "type": "string"
+                        },
+                        "webhook_secret": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "pem": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "client_id",
+                        "client_secret",
+                        "webhook_secret",
+                        "pem"
+                      ],
+                      "additionalProperties": true
+                    }
+                  ]
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/integration-from-manifest"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/not_found"
+          },
+          "422": {
+            "$ref": "#/components/responses/validation_failed_simple"
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "apps",
+          "subcategory": "apps"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/app/hook/config": {
+      "get": {
+        "summary": "Get a webhook configuration for an app",
+        "description": "Returns the webhook configuration for a GitHub App. For more information about configuring a webhook for your app, see \"[Creating a GitHub App](/developers/apps/creating-a-github-app).\"\n\nYou must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.",
+        "tags": [
+          "apps"
+        ],
+        "operationId": "apps/get-webhook-config-for-app",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/apps/webhooks#get-a-webhook-configuration-for-an-app"
+        },
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/webhook-config"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/webhook-config"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "apps",
+          "subcategory": "webhooks"
+        },
+        "x-octokit": {}
+      },
+      "patch": {
+        "summary": "Update a webhook configuration for an app",
+        "description": "Updates the webhook configuration for a GitHub App. For more information about configuring a webhook for your app, see \"[Creating a GitHub App](/developers/apps/creating-a-github-app).\"\n\nYou must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.",
+        "tags": [
+          "apps"
+        ],
+        "operationId": "apps/update-webhook-config-for-app",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/apps/webhooks#update-a-webhook-configuration-for-an-app"
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "$ref": "#/components/schemas/webhook-config-url"
+                  },
+                  "content_type": {
+                    "$ref": "#/components/schemas/webhook-config-content-type"
+                  },
+                  "secret": {
+                    "$ref": "#/components/schemas/webhook-config-secret"
+                  },
+                  "insecure_ssl": {
+                    "$ref": "#/components/schemas/webhook-config-insecure-ssl"
+                  }
+                }
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "content_type": "json",
+                    "insecure_ssl": "0",
+                    "secret": "********",
+                    "url": "https://example.com/webhook"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/webhook-config"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/webhook-config"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "apps",
+          "subcategory": "webhooks"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/app/hook/deliveries": {
+      "get": {
+        "summary": "List deliveries for an app webhook",
+        "description": "Returns a list of webhook deliveries for the webhook configured for a GitHub App.\n\nYou must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.",
+        "tags": [
+          "apps"
+        ],
+        "operationId": "apps/list-webhook-deliveries",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/apps/webhooks#list-deliveries-for-an-app-webhook"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/per-page"
+          },
+          {
+            "$ref": "#/components/parameters/cursor"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/hook-delivery-item"
+                  }
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/hook-delivery-items"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/bad_request"
+          },
+          "422": {
+            "$ref": "#/components/responses/validation_failed"
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "apps",
+          "subcategory": "webhooks"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/app/hook/deliveries/{delivery_id}": {
+      "get": {
+        "summary": "Get a delivery for an app webhook",
+        "description": "Returns a delivery for the webhook configured for a GitHub App.\n\nYou must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.",
+        "tags": [
+          "apps"
+        ],
+        "operationId": "apps/get-webhook-delivery",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/apps/webhooks#get-a-delivery-for-an-app-webhook"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/delivery-id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/hook-delivery"
+                },
+                "examples": {
+                  "default": {
+                    "$ref": "#/components/examples/hook-delivery"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/bad_request"
+          },
+          "422": {
+            "$ref": "#/components/responses/validation_failed"
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "apps",
+          "subcategory": "webhooks"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/app/hook/deliveries/{delivery_id}/attempts": {
+      "post": {
+        "summary": "Redeliver a delivery for an app webhook",
+        "description": "Redeliver a delivery for the webhook configured for a GitHub App.\n\nYou must use a [JWT](https://docs.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.",
+        "tags": [
+          "apps"
+        ],
+        "operationId": "apps/redeliver-webhook-delivery",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/apps/webhooks#redeliver-a-delivery-for-an-app-webhook"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/delivery-id"
+          }
+        ],
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/accepted"
+          },
+          "400": {
+            "$ref": "#/components/responses/bad_request"
+          },
+          "422": {
+            "$ref": "#/components/responses/validation_failed"
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": false,
+          "category": "apps",
+          "subcategory": "webhooks"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/app/installation-requests": {
+      "get": {
+        "summary": "List installation requests for the authenticated app",
+        "description": "Lists all the pending installation requests for the authenticated GitHub App.",
+        "tags": [
+          "apps"
+        ],
+        "operationId": "apps/list-installation-requests-for-authenticated-app",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/rest/apps/apps#list-installation-requests-for-the-authenticated-app"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/per-page"
+          },
+          {
+            "$ref": "#/components/parameters/page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of integration installation requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/integration-installation-request"
+                  }
+                },
+                "examples": {
+                  "exampleKey1": {
+                    "$ref": "#/components/examples/integration-installation-request-paginated"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "$ref": "#/components/responses/not_modified"
+          },
+          "401": {
+            "$ref": "#/components/responses/requires_authentication"
+          }
+        },
+        "x-github": {
+          "githubCloudOnly": false,
+          "enabledForGitHubApps": true,
+          "category": "apps",
+          "subcategory": "apps"
+        },
+        "x-octokit": {}
+      }
+    },
+    "/app/installations": {
+      "get": {
+        "summary": "List installations for the authenticated app",
+        "description": "You must use a [JWT](https://docs.github.com/enterprise-server@3.9/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app) to access this endpoint.\n\nThe permissions the installation has are included under the `permissions` key.",
+        "tags": [
+          "apps"
+        ],
+        "operationId": "apps/list-installations",
+        "externalDocs": {
+          "description": "API method documentation",
+          "url": "https://docs.github.com/enterprise-server@3.9/rest/apps/apps#list-installations-for-the-authenticated-app"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/per-page"
+          },
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/since"
+          },
+          {
+            "name": "outdated",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The permissions the installation has are included under the `permissions` key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "title": "Installation",
+                    "description": "Installation",
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "description": "The ID of the installation.",
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "account": {
+                        "nullable": true,
+                        "allOf": [
+                          {
+                            "title": "Simple User",
+                            "description": "A GitHub user.",
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "nullable": true,
+                                "type": "string"
+                              },
+                              "email": {
+                                "nullable": true,
+                                "type": "string"
+                              },
+                              "login": {
+                                "type": "string",
+                                "example": "octocat"
+                              },
+                              "id": {
+                                "type": "integer",
+                                "example": 1
+                              },
+                              "node_id": {
+                                "type": "string",
+                                "example": "MDQ6VXNlcjE="
+                              },
+                              "avatar_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://github.com/images/error/octocat_happy.gif"
+                              },
+                              "gravatar_id": {
+                                "type": "string",
+                                "example": "41d064eb2195891e12d0413f63227ea7",
+                                "nullable": true
+                              },
+                              "url": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://api.github.com/users/octocat"
+                              },
+                              "html_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://github.com/octocat"
+                              },
+                              "followers_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://api.github.com/users/octocat/followers"
+                              },
+                              "following_url": {
+                                "type": "string",
+                                "example": "https://api.github.com/users/octocat/following{/other_user}"
+                              },
+                              "gists_url": {
+                                "type": "string",
+                                "example": "https://api.github.com/users/octocat/gists{/gist_id}"
+                              },
+                              "starred_url": {
+                                "type": "string",
+                                "example": "https://api.github.com/users/octocat/starred{/owner}{/repo}"
+                              },
+                              "subscriptions_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://api.github.com/users/octocat/subscriptions"
+                              },
+                              "organizations_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://api.github.com/users/octocat/orgs"
+                              },
+                              "repos_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://api.github.com/users/octocat/repos"
+                              },
+                              "events_url": {
+                                "type": "string",
+                                "example": "https://api.github.com/users/octocat/events{/privacy}"
+                              },
+                              "received_events_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://api.github.com/users/octocat/received_events"
+                              },
+                              "type": {
+                                "type": "string",
+                                "example": "User"
+                              },
+                              "site_admin": {
+                                "type": "boolean"
+                              },
+                              "starred_at": {
+                                "type": "string",
+                                "example": "\"2020-07-09T00:17:55Z\""
+                              }
+                            },
+                            "required": [
+                              "avatar_url",
+                              "events_url",
+                              "followers_url",
+                              "following_url",
+                              "gists_url",
+                              "gravatar_id",
+                              "html_url",
+                              "id",
+                              "node_id",
+                              "login",
+                              "organizations_url",
+                              "received_events_url",
+                              "repos_url",
+                              "site_admin",
+                              "starred_url",
+                              "subscriptions_url",
+                              "type",
+                              "url"
+                            ]
+                          },
+                          {
+                            "title": "Enterprise",
+                            "description": "An enterprise on GitHub.",
+                            "type": "object",
+                            "properties": {
+                              "description": {
+                                "description": "A short description of the enterprise.",
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "html_url": {
+                                "type": "string",
+                                "format": "uri",
+                                "example": "https://github.com/enterprises/octo-business"
+                              },
+                              "website_url": {
+                                "description": "The enterprise's website URL.",
+                                "type": "string",
+                                "nullable": true,
+                                "format": "uri"
+                              },
+                              "id": {
+                                "description": "Unique identifier of the enterprise",
+                                "example": 42,
+                                "type": "integer"
+                              },
+                              "node_id": {
+                                "type": "string",
+                                "example": "MDEwOlJlcG9zaXRvcnkxMjk2MjY5"
+                              },
+                              "name": {
+                                "description": "The name of the enterprise.",
+                                "type": "string",
+                                "example": "Octo Business"
+                              },
+                              "slug": {
+                                "description": "The slug url identifier for the enterprise.",
+                                "type": "string",
+                                "example": "octo-business"
+                              },
+                              "created_at": {
+                                "type": "string",
+                                "nullable": true,
+                                "format": "date-time",
+                                "example": "2019-01-26T19:01:12Z"
+                              },
+                              "updated_at": {
+                                "type": "string",
+                                "nullable": true,
+                                "format": "date-time",
+                                "example": "2019-01-26T19:14:43Z"
+                              },
+                              "avatar_url": {
+                                "type": "string",
+                                "format": "uri"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "node_id",
+                              "name",
+                              "slug",
+                              "html_url",
+                              "created_at",
+                              "updated_at",
+                              "avatar_url"
+                            ]
+                          }
+                        ]
+                      },
+                      "repository_selection": {
+                        "description": "Describe whether all repositories have been selected or there's a selection involved",
+                        "type": "string",
+                        "enum": [
+                          "all",
+                          "selected"
+                        ]
+                      },
+                      "access_tokens_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://api.github.com/installations/1/access_tokens"
+                      },
+                      "repositories_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://api.github.com/installation/repositories"
+                      },
+                      "html_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://github.com/organizations/github/settings/installations/1"
+                      },
+                      "app_id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "target_id": {
+                        "description": "The ID of the user or organization this token is being scoped to.",
+                        "type": "integer"
+                      },
+                      "target_type": {
+                        "type": "string",
+                        "example": "Organization"
+                      },
+                      "permissions": {
+                        "title": "App Permissions",
+                        "type": "object",
+                        "description": "The permissions granted to the user access token.",
+                        "properties": {
+                          "actions": {
+                            "type": "string",
+                            "description": "The level of permission to grant the access token for GitHub Actions workflows, workflow runs, and artifacts.",
+                            "enum": [
+                              "read",
+                              "write"
+                            ]
+                          },
+                          "administration": {
+                            "type": "string",
+                            "description": "The level of permission to grant the access token for repository creation, deletion, settings, teams, and collaborators creation.",
+                            "enum": [
+                              "read",
+                              "write"
+                            ]
+                          },
+                          "checks": {
+                            "type": "string",
+                            "description": "The level of permission to grant the access token for checks on code.",
+                            "enum": [
+                              "read",
+                              "write"
+                            ]
+                          },
+                          "contents": {
+                            "type": "string",
+                            "description": "The level of permission to grant the access token for repository contents, commits, branches, downloads, releases, and merges.",
+                            "enum": [
+                              "read",
+                              "write"
+                            ]
+                          },
+                          "deployments": {
+                            "type": "string",
+                            "description": "The level of permission to grant the access token for deployments and deployment statuses.",
+                            "enum": [
+                              "read",
+                              "write"
+                            ]
+                          },
+                          "environments": {
+                            "type": "string",
+                            "description": "The level of permission to grant the access token for managing repository environments.",
+                            "enum": [
+                              "read",
+                              "write"
+                            ]
+                          },
+                          "issues": {
+                            "type": "string",
+                            "description": "The level of permission to grant the access token for issues and related comments, assignees, labels, and milestones.",
+                            "enum": [
+                              "read",
+                              "write"
+                            ]
+                          },
+                          "metadata": {
+                            "type": "string",
+                            "description": "The level of permission to grant the access token to search repositories, list collaborators, and access repository metadata.",
+                            "enum": [
+                              "read",
+                              "write"
+                            ]
+                          },
+                          "packages": {
+                            "type": "string",
+                            "description": "The level of permission to grant the access token for packages published to GitHub Packages.",
+                            "enum": [
+                              "read",
+                              "write"
+                            ]
+                          },
+                          "pages": {
+                            "type": "string",
+                            "description": "The level of permission to grant the access token to retrieve Pages statuses, configuration, and builds, as well as create new builds.",
+                            "enum": [
+                              "read",
+                              "write"
+                            ]
+                          },
+                          "pull_requests": {
+                            "type": "string",
+                            "description": "The level of permission to grant the access token for pull requests and related comments, assignees, labels, milestones, and merges.",
+                            "enum": [
+    
