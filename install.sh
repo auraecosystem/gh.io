@@ -38,3 +38,4 @@ Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.32
 # Extract the installer
 Add-Type -AssemblyName System.IO.Compression.FileSystem ;
 [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD\actions-runner-win-arm64-2.329.0.zip", "$PWD")
+
