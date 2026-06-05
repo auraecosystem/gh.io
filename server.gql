@@ -1,0 +1,8 @@
+ # A GraphQL server must define a root query type per the spec.
+ type Query {
+   unused: String
+ }
+
+ type Mutation {
+ sendEmail(id: String!, content: String): Boolean
+ }
