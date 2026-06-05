@@ -1,1 +1,12 @@
+type Movie @table {
+  title: String!
+  imageUrl: String!
+  genre: String
+}
 
+type MovieMetadata @table {
+  movie: Movie! @unique
+  rating: Float
+  releaseYear: Int
+  description: String
+}
