@@ -198,3 +198,16 @@ Files are cached on Cloudflare's global content-delivery network based on their 
 URLs that do not specify a fully resolved package version number redirect to one that does. This is the latest version when none is specified, or the maximum satisfying version when a semver range is given. For the best chance of getting a cache hit, use the full package version number and file path in your UNPKG URLs instead of an npm tag or semver range.
 For example, a URL like unpkg.com/preact@10 will not be a direct cache hit because UNPKG needs to resolve the version 10 to the latest matching version of Preact published with that major, plus it needs to figure out which file to serve. So a short URL like this will always cause a redirect to the permanent URL for that resource. If you need to make sure you hit the cache, use a fixed version number and the full file path, like unpkg.com/preact@10.5.0/dist/preact.min.js.
 About
+
+var path = require('path');
+var fs = require('fs');
+var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
+var simple = require(lib+'/simple_math.js');
+var advanced = require(lib+'/advanced_math.js');
+module.exports ={
+	addition: simple.addition;
+	substraction: simple.substraction;
+	multiplication: advanced.multiplication;
+	division: advanced.division;
+	fibonacci: advanced.fibonacci;
+}
