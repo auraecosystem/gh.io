@@ -1,0 +1,44 @@
+const EventBus = require("./core/EventBus");
+const RuntimeController = require("./runtime/RuntimeController");
+const AiKernel = require("./kernel/AiKernel");
+const StatusHUD = require("./ui/StatusHUD");
+
+function bootstrap() {
+  const bus = new EventBus();
+
+  const kernel = new AiKernel({
+    bus,
+    providers: {
+      github: {
+        async preSignIn() {
+          return {
+            userCode: "ABCD-1234",
+            verificationURL: new URL("https://github.com/login/device")
+          };
+        },
+        async completeSignIn() {
+          return {
+            status: "logged_in",
+            quota: { used: 10, limit: 100 }
+          };
+        },
+        signOutAll() {}
+      }
+    }
+  });
+
+  const runtime = new RuntimeController({
+    kernel,
+    bus,
+    logger: console
+  });
+
+  new StatusHUD(bus);
+
+  runtime.start();
+
+  // simulate auth flow
+  setTimeout(() => kernel.signIn(), 2000);
+}
+
+bootstrap();
