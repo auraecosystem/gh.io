@@ -16,7 +16,7 @@ function transformSearchParams(script) {
   let params = new URLSearchParams();
   params.set("target", script.getAttribute("data-target") || "es2022");
 
-  let type = script.type;
+  let type = script.type
   if (type === "text/jsx" || type === "text/tsx" || type === "text/babel") {
     params.set("jsx", script.getAttribute("data-jsx") || "automatic");
   }
