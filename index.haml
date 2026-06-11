@@ -1,1 +1,94 @@
 
+!!! 5
+%html(lang="en")
+  %head
+    %meta(charset="utf-8")
+    %meta(name="viewport" content="width=device-width, initial-scale=1")
+
+    %title Web4 AI Runtime Dashboard
+
+    / Styles + UI engine hooks
+    %link(rel="stylesheet" href="/assets/styles.css")
+    %script(type="module" src="/runtime/bootstrap.js")
+
+  %body#app(data-theme="dark")
+
+    / =========================
+    / TOP STATUS BAR
+    / =========================
+    %header.status-bar
+      .left
+        %h1.logo Web4 AI
+        %span.status-indicator(data-bind="system.status") ● Running
+
+      .center
+        %input.search-box(type="text" placeholder="Ask the runtime...")
+
+      .right
+        %button#auth-btn Sign In
+        %button#settings-btn ⚙
+
+    / =========================
+    / MAIN LAYOUT
+    / =========================
+    %main.layout
+
+      / LEFT PANEL - SYSTEM STATE
+      %aside.panel.left
+        %h2 System State
+
+        .card
+          %h3 Auth
+          %p(data-bind="auth.status") Unknown
+
+        .card
+          %h3 Quota
+          %p(data-bind="quota.status") Loading...
+
+        .card
+          %h3 Kernel
+          %p(data-bind="kernel.state") Idle
+
+      / CENTER PANEL - AI WORKSPACE
+      %section.panel.center
+
+        %div.workspace
+
+          %h2 AI Workspace
+
+          / Live output stream
+          %div.output-stream#output
+            %p Waiting for runtime events...
+
+          / Input box for agent interaction
+          %textarea#prompt(placeholder="Run a command in the AI kernel...")
+
+          %button#run-btn Run
+
+      / RIGHT PANEL - TOOLING / PLUGINS
+      %aside.panel.right
+        %h2 Tools
+
+        .tool-list
+          .tool
+            %span GitHub Copilot
+            %button(data-action="toggle") Enable
+
+          .tool
+            %span Fadaka Wallet
+            %button(data-action="open") Open
+
+          .tool
+            %span Web4 Runtime
+            %button(data-action="inspect") Inspect
+
+    / =========================
+    / FOOTER HUD
+    / =========================
+    %footer.hud
+
+      .hud-left
+        %span#event-log Listening for events...
+
+      .hud-right
+        %span.version v1.0 Web4 Kernel
