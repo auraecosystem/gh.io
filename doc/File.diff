@@ -1,0 +1,1062 @@
+diff --git a/.github/workflows/generator-generic-ossf-slsa3-publish.yml b/.github/workflows/generator-generic-ossf-slsa3-publish.yml
+new file mode 100644
+index 0000000..35c829b
+--- /dev/null
++++ b/.github/workflows/generator-generic-ossf-slsa3-publish.yml
+@@ -0,0 +1,66 @@
++# This workflow uses actions that are not certified by GitHub.
++# They are provided by a third-party and are governed by
++# separate terms of service, privacy policy, and support
++# documentation.
++
++# This workflow lets you generate SLSA provenance file for your project.
++# The generation satisfies level 3 for the provenance requirements - see https://slsa.dev/spec/v0.1/requirements
++# The project is an initiative of the OpenSSF (openssf.org) and is developed at
++# https://github.com/slsa-framework/slsa-github-generator.
++# The provenance file can be verified using https://github.com/slsa-framework/slsa-verifier.
++# For more information about SLSA and how it improves the supply-chain, visit slsa.dev.
++
++name: SLSA generic generator
++on:
++  workflow_dispatch:
++  release:
++    types: [created]
++
++jobs:
++  build:
++    runs-on: ubuntu-latest
++    outputs:
++      digests: ${{ steps.hash.outputs.digests }}
++
++    steps:
++      - uses: actions/checkout@v4
++
++      # ========================================================
++      #
++      # Step 1: Build your artifacts.
++      #
++      # ========================================================
++      - name: Build artifacts
++        run: |
++            # These are some amazing artifacts.
++            echo "artifact1" > artifact1
++            echo "artifact2" > artifact2
++
++      # ========================================================
++      #
++      # Step 2: Add a step to generate the provenance subjects
++      #         as shown below. Update the sha256 sum arguments
++      #         to include all binaries that you generate
++      #         provenance for.
++      #
++      # ========================================================
++      - name: Generate subject for provenance
++        id: hash
++        run: |
++          set -euo pipefail
++
++          # List the artifacts the provenance will refer to.
++          files=$(ls artifact*)
++          # Generate the subjects (base64 encoded).
++          echo "hashes=$(sha256sum $files | base64 -w0)" >> "${GITHUB_OUTPUT}"
++
++  provenance:
++    needs: [build]
++    permissions:
++      actions: read   # To read the workflow path.
++      id-token: write # To sign the provenance.
++      contents: write # To add assets to a release.
++    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.4.0
++    with:
++      base64-subjects: "${{ needs.build.outputs.digests }}"
++      upload-assets: true # Optional: Upload to a new release
+diff --git a/.github/workflows/google.yml b/.github/workflows/google.yml
+new file mode 100644
+index 0000000..dca8eee
+--- /dev/null
++++ b/.github/workflows/google.yml
+@@ -0,0 +1,116 @@
++# This workflow will build a docker container, publish it to Google Container
++# Registry, and deploy it to GKE when there is a push to the "actions-runner"
++# branch.
++#
++# To configure this workflow:
++#
++# 1. Enable the following Google Cloud APIs:
++#
++#    - Artifact Registry (artifactregistry.googleapis.com)
++#    - Google Kubernetes Engine (container.googleapis.com)
++#    - IAM Credentials API (iamcredentials.googleapis.com)
++#
++#    You can learn more about enabling APIs at
++#    https://support.google.com/googleapi/answer/6158841.
++#
++# 2. Ensure that your repository contains the necessary configuration for your
++#    Google Kubernetes Engine cluster, including deployment.yml,
++#    kustomization.yml, service.yml, etc.
++#
++# 3. Create and configure a Workload Identity Provider for GitHub:
++#    https://github.com/google-github-actions/auth#preferred-direct-workload-identity-federation.
++#
++#    Depending on how you authenticate, you will need to grant an IAM principal
++#    permissions on Google Cloud:
++#
++#    - Artifact Registry Administrator (roles/artifactregistry.admin)
++#    - Kubernetes Engine Developer (roles/container.developer)
++#
++#    You can learn more about setting IAM permissions at
++#    https://cloud.google.com/iam/docs/manage-access-other-resources
++#
++# 5. Change the values in the "env" block to match your values.
++
++name: 'Build and Deploy to GKE'
++
++on:
++  push:
++    branches:
++      - '"actions-runner"'
++
++env:
++  PROJECT_ID: 'my-project' # TODO: update to your Google Cloud project ID
++  GAR_LOCATION: 'us-central1' # TODO: update to your region
++  GKE_CLUSTER: 'cluster-1' # TODO: update to your cluster name
++  GKE_ZONE: 'us-central1-c' # TODO: update to your cluster zone
++  DEPLOYMENT_NAME: 'gke-test' # TODO: update to your deployment name
++  REPOSITORY: 'samples' # TODO: update to your Artifact Registry docker repository name
++  IMAGE: 'static-site'
++  WORKLOAD_IDENTITY_PROVIDER: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider' # TODO: update to your workload identity provider
++
++jobs:
++  setup-build-publish-deploy:
++    name: 'Setup, Build, Publish, and Deploy'
++    runs-on: 'ubuntu-latest'
++    environment: 'production'
++
++    permissions:
++      contents: 'read'
++      id-token: 'write'
++
++    steps:
++      - name: 'Checkout'
++        uses: 'actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332' # actions/checkout@v4
++
++      # Configure Workload Identity Federation and generate an access token.
++      #
++      # See https://github.com/google-github-actions/auth for more options,
++      # including authenticating via a JSON credentials file.
++      - id: 'auth'
++        name: 'Authenticate to Google Cloud'
++        uses: 'google-github-actions/auth@f112390a2df9932162083945e46d439060d66ec2' # google-github-actions/auth@v2
++        with:
++          workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
++
++      # Authenticate Docker to Google Cloud Artifact Registry
++      - name: 'Docker Auth'
++        uses: 'docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567' # docker/login-action@v3
++        with:
++          username: 'oauth2accesstoken'
++          password: '${{ steps.auth.outputs.auth_token }}'
++          registry: '${{ env.GAR_LOCATION }}-docker.pkg.dev'
++
++      # Get the GKE credentials so we can deploy to the cluster
++      - name: 'Set up GKE credentials'
++        uses: 'google-github-actions/get-gke-credentials@6051de21ad50fbb1767bc93c11357a49082ad116' # google-github-actions/get-gke-credentials@v2
++        with:
++          cluster_name: '${{ env.GKE_CLUSTER }}'
++          location: '${{ env.GKE_ZONE }}'
++
++      # Build the Docker image
++      - name: 'Build and push Docker container'
++        run: |-
++          DOCKER_TAG="${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}"
++
++          docker build \
++            --tag "${DOCKER_TAG}" \
++            --build-arg GITHUB_SHA="${GITHUB_SHA}" \
++            --build-arg GITHUB_REF="${GITHUB_REF}" \
++            .
++
++          docker push "${DOCKER_TAG}"
++
++      # Set up kustomize
++      - name: 'Set up Kustomize'
++        run: |-
++          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.3/kustomize_v5.4.3_linux_amd64.tar.gz
++          chmod u+x ./kustomize
++
++      # Deploy the Docker image to the GKE cluster
++      - name: 'Deploy to GKE'
++        run: |-
++          # replacing the image name in the k8s template
++          ./kustomize edit set image LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY/IMAGE:TAG=$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE:$GITHUB_SHA
++          ./kustomize build . | kubectl apply -f -
++          kubectl rollout status deployment/$DEPLOYMENT_NAME
++          kubectl get services -o wide
+diff --git a/.github/workflows/node.js.yml b/.github/workflows/node.js.yml
+new file mode 100644
+index 0000000..b3da408
+--- /dev/null
++++ b/.github/workflows/node.js.yml
+@@ -0,0 +1,31 @@
++# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
++# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
++
++name: Node.js CI
++
++on:
++  push:
++    branches: [ "actions-runner" ]
++  pull_request:
++    branches: [ "actions-runner" ]
++
++jobs:
++  build:
++
++    runs-on: ubuntu-latest
++
++    strategy:
++      matrix:
++        node-version: [18.x, 20.x, 22.x]
++        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
++
++    steps:
++    - uses: actions/checkout@v4
++    - name: Use Node.js ${{ matrix.node-version }}
++      uses: actions/setup-node@v4
++      with:
++        node-version: ${{ matrix.node-version }}
++        cache: 'npm'
++    - run: npm ci
++    - run: npm run build --if-present
++    - run: npm test
+diff --git a/.github/workflows/octopusdeploy.yml b/.github/workflows/octopusdeploy.yml
+new file mode 100644
+index 0000000..70b13f4
+--- /dev/null
++++ b/.github/workflows/octopusdeploy.yml
+@@ -0,0 +1,112 @@
++# This workflow uses actions that are not certified by GitHub.
++# They are provided by a third-party and are governed by separate terms of service,
++# privacy policy, and support documentation.
++#
++# This workflow will build and publish a Docker container which is then deployed through Octopus Deploy.
++#
++# The build job in this workflow currently assumes that there is a Dockerfile that generates the relevant application image.
++# If required, this job can be modified to generate whatever alternative build artifact is required for your deployment.
++#
++# This workflow assumes you have already created a Project in Octopus Deploy.
++# For instructions see https://octopus.com/docs/projects/setting-up-projects
++#
++# To configure this workflow:
++#
++# 1. Decide where you are going to host your image.
++#    This template uses the GitHub Registry for simplicity but if required you can update the relevant DOCKER_REGISTRY variables below.
++#
++# 2. Create and configure an OIDC credential for a service account in Octopus.
++#    This allows for passwordless authentication to your Octopus instance through a trust relationship configured between Octopus, GitHub and your GitHub Repository.
++#    https://octopus.com/docs/octopus-rest-api/openid-connect/github-actions
++#
++# 3. Configure your Octopus project details below:
++#      OCTOPUS_URL: update to your Octopus Instance Url
++#      OCTOPUS_SERVICE_ACCOUNT: update to your service account Id
++#      OCTOPUS_SPACE: update to the name of the space your project is configured in
++#      OCTOPUS_PROJECT: update to the name of your Octopus project
++#      OCTOPUS_ENVIRONMENT: update to the name of the environment to recieve the first deployment
++
++
++name: 'Build and Deploy to Octopus Deploy'
++
++on:
++  push:
++    branches:
++      - '"actions-runner"'
++
++jobs:
++  build:
++    name: Build
++    runs-on: ubuntu-latest
++    permissions:
++      packages: write
++      contents: read
++    env:
++      DOCKER_REGISTRY: ghcr.io                                # TODO: Update to your docker registry uri
++      DOCKER_REGISTRY_USERNAME: ${{ github.actor }}           # TODO: Update to your docker registry username
++      DOCKER_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}   # TODO: Update to your docker registry password
++    outputs:
++      image_tag: ${{ steps.meta.outputs.version }}
++    steps:
++      - uses: actions/checkout@v4
++
++      - name: Set up Docker Buildx
++        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
++
++      - name: Log in to the Container registry
++        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
++        with:
++          registry: ${{ env.DOCKER_REGISTRY }}
++          username: ${{ env.DOCKER_REGISTRY_USERNAME }}
++          password: ${{ env.DOCKER_REGISTRY_PASSWORD }}
++
++      - name: Extract metadata (tags, labels) for Docker
++        id: meta
++        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
++        with:
++          images: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}
++          tags: type=semver,pattern={{version}},value=v1.0.0-{{sha}}
++
++      - name: Build and push Docker image
++        id: push
++        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
++        with:
++          context: .
++          push: true
++          tags: ${{ steps.meta.outputs.tags }}
++          labels: ${{ steps.meta.outputs.labels }}
++  deploy:
++    name: Deploy
++    permissions:
++      id-token: write
++    runs-on: ubuntu-latest
++    needs: [ build ]
++    env:
++      OCTOPUS_URL: 'https://your-octopus-url'             # TODO: update to your Octopus Instance url
++      OCTOPUS_SERVICE_ACCOUNT: 'your-service-account-id'  # TODO: update to your service account Id
++      OCTOPUS_SPACE: 'your-space'                         # TODO: update to the name of the space your project is configured in
++      OCTOPUS_PROJECT: 'your-project'                     # TODO: update to the name of your Octopus project
++      OCTOPUS_ENVIRONMENT: 'your-environment'             # TODO: update to the name of the environment to recieve the first deployment
++
++    steps:
++      - name: Log in to Octopus Deploy
++        uses: OctopusDeploy/login@34b6dcc1e86fa373c14e6a28c5507d221e4de629  #v1.0.2
++        with:
++          server: '${{ env.OCTOPUS_URL }}'
++          service_account_id: '${{ env.OCTOPUS_SERVICE_ACCOUNT }}'
++
++      - name: Create Release
++        id: create_release
++        uses: OctopusDeploy/create-release-action@fea7e7b45c38c021b6bc5a14bd7eaa2ed5269214 #v3.2.2
++        with:
++          project: '${{ env.OCTOPUS_PROJECT }}'
++          space: '${{ env.OCTOPUS_SPACE }}'
++          packages: '*:${{ needs.build.outputs.image_tag }}'
++
++      - name: Deploy Release
++        uses: OctopusDeploy/deploy-release-action@b10a606c903b0a5bce24102af9d066638ab429ac #v3.2.1
++        with:
++          project: '${{ env.OCTOPUS_PROJECT }}'
++          space: '${{ env.OCTOPUS_SPACE }}'
++          release_number: '${{ steps.create_release.outputs.release_number  }}'
++          environments: ${{ env.OCTOPUS_ENVIRONMENT }}
+diff --git a/Kernel/Ai.cjs b/Kernel/Ai.cjs
+new file mode 100644
+index 0000000..6bc31d4
+--- /dev/null
++++ b/Kernel/Ai.cjs
+@@ -0,0 +1,39 @@
++class AiKernel {
++  constructor({ bus, providers }) {
++    this.bus = bus;
++    this.providers = providers;
++    this.running = false;
++  }
++
++  start() {
++    this.running = true;
++    this.bus.emit("kernel:ready", true);
++  }
++
++  async signIn() {
++    this.bus.emit("auth:change", "loading");
++
++    try {
++      const provider = this.providers.github;
++
++      const session = await provider.preSignIn();
++
++      this.bus.emit("auth:device_code", session);
++
++      const result = await provider.completeSignIn(session);
++
++      this.bus.emit("auth:change", result.status);
++      this.bus.emit("quota:update", result.quota);
++    } catch (err) {
++      this.bus.emit("auth:change", "failed");
++      this.bus.emit("error", err.message);
++    }
++  }
++
++  signOut() {
++    this.providers.github.signOutAll?.();
++    this.bus.emit("auth:change", "logged_out");
++  }
++}
++
++module.exports = AiKernel;
+diff --git a/install_k3.sh b/actions/var/.env/install_k3.sh
+similarity index 100%
+rename from install_k3.sh
+rename to actions/var/.env/install_k3.sh
+diff --git a/browser/run.cjs b/browser/run.cjs
+new file mode 100644
+index 0000000..7aa34ee
+--- /dev/null
++++ b/browser/run.cjs
+@@ -0,0 +1,131 @@
++const transformOrigin = "https://esm.unpkg.com";
++
++const supportedScriptTypes = new Set([
++  "text/babel",
++  "text/jsx",
++  "text/ts",
++  "text/tsx"
++]);
++
++function scriptFilename(script, index) {
++  return (
++    script.getAttribute("data-filename") ||
++    "/inline-" + index + extensionForType(script.type)
++  );
++}
++
++function extensionForType(type) {
++  if (type === "text/ts") return ".ts";
++  if (type === "text/tsx") return ".tsx";
++  if (type === "text/jsx") return ".jsx";
++  return ".js";
++}
++
++function transformSearchParams(script) {
++  const params = new URLSearchParams();
++
++  params.set(
++    "target",
++    script.getAttribute("data-target") || "es2022"
++  );
++
++  const type = script.type;
++
++  if (
++    type === "text/jsx" ||
++    type === "text/tsx" ||
++    type === "text/babel"
++  ) {
++    params.set(
++      "jsx",
++      script.getAttribute("data-jsx") || "automatic"
++    );
++  }
++
++  if (script.hasAttribute("data-jsx-import-source")) {
++    params.set(
++      "jsxImportSource",
++      script.getAttribute("data-jsx-import-source")
++    );
++  }
++
++  if (script.hasAttribute("data-dev")) {
++    params.set("env", "development");
++  }
++
++  return params;
++}
++
++async function transformScript(script, index) {
++  const filename = scriptFilename(script, index);
++
++  const response = await fetch(
++    new URL(
++      "/transform?" + transformSearchParams(script),
++      transformOrigin
++    ),
++    {
++      method: "POST",
++      headers: { "Content-Type": "application/json" },
++      body: JSON.stringify({
++        filename,
++        source: script.textContent || ""
++      })
++    }
++  );
++
++  if (!response.ok) {
++    throw new Error(await response.text());
++  }
++
++  return response.text();
++}
++
++async function run(root = document) {
++  const scripts = Array.from(
++    root.querySelectorAll("script[type]")
++  ).filter((script) => {
++    return (
++      supportedScriptTypes.has(script.type) &&
++      !script.hasAttribute("data-esm-unpkg-ran")
++    );
++  });
++
++  for (let index = 0; index < scripts.length; index++) {
++    const script = scripts[index];
++
++    script.setAttribute("data-esm-unpkg-ran", "");
++
++    const moduleScript = document.createElement("script");
++    moduleScript.type = "module";
++
++    if (script.nonce) {
++      moduleScript.nonce = script.nonce;
++    }
++
++    moduleScript.textContent = await transformScript(script, index);
++
++    script.after(moduleScript);
++  }
++}
++
++/**
++ * CommonJS export
++ */
++module.exports = {
++  run,
++  default: run
++};
++
++/**
++ * Auto-run in browser environment
++ */
++if (typeof document !== "undefined") {
++  if (document.readyState === "loading") {
++    document.addEventListener("DOMContentLoaded", () => run(), {
++      once: true
++    });
++  } else {
++    run();
++  }
++}
+diff --git a/cjs/react.react-server.production.js b/cjs/react.react-server.production.js
+new file mode 100644
+index 0000000..c66e3b7
+--- /dev/null
++++ b/cjs/react.react-server.production.js
+@@ -0,0 +1,7 @@
++'use strict';
++
++if (process.env.NODE_ENV === 'production') {
++  module.exports = require('./cjs/react.react-server.production.js');
++} else {
++  module.exports = require('./cjs/react.react-server.development.js');
++}
+diff --git a/client-side/run.js b/client-side/run.js
+new file mode 100644
+index 0000000..a26bbb6
+--- /dev/null
++++ b/client-side/run.js
+@@ -0,0 +1,78 @@
++const transformOrigin = "https://esm.unpkg.com";
++const supportedScriptTypes = new Set(["text/babel", "text/jsx", "text/ts", "text/tsx"]);
++
++function scriptFilename(script, index) {
++  return script.getAttribute("data-filename") || "/inline-" + index + extensionForType(script.type);
++}
++
++function extensionForType(type) {
++  if (type === "text/ts") return ".ts";
++  if (type === "text/tsx") return ".tsx";
++  if (type === "text/jsx") return ".jsx";
++  return ".js";
++}
++
++function transformSearchParams(script) {
++  let params = new URLSearchParams();
++  params.set("target", script.getAttribute("data-target") || "es2022");
++
++  let type = script.type
++  if (type === "text/jsx" || type === "text/tsx" || type === "text/babel") {
++    params.set("jsx", script.getAttribute("data-jsx") || "automatic");
++  }
++  if (script.hasAttribute("data-jsx-import-source")) {
++    params.set("jsxImportSource", script.getAttribute("data-jsx-import-source"));
++  }
++  if (script.hasAttribute("data-dev")) {
++    params.set("env", "development");
++  }
++
++  return params;
++}
++
++async function transformScript(script, index) {
++  let filename = scriptFilename(script, index);
++  let response = await fetch(new URL("/transform?" + transformSearchParams(script), transformOrigin), {
++    method: "POST",
++    headers: { "Content-Type": "application/json" },
++    body: JSON.stringify({
++      filename,
++      source: script.textContent || ""
++    })
++  });
++
++  if (!response.ok) {
++    throw new Error(await response.text());
++  }
++
++  return response.text();
++}
++
++export async function run(root = document) {
++  let scripts = Array.from(root.querySelectorAll("script[type]")).filter((script) => {
++    return supportedScriptTypes.has(script.type) && !script.hasAttribute("data-esm-unpkg-ran");
++  });
++
++  for (let index = 0; index < scripts.length; index += 1) {
++    let script = scripts[index];
++    script.setAttribute("data-esm-unpkg-ran", "");
++
++    let moduleScript = document.createElement("script");
++    moduleScript.type = "module";
++    if (script.nonce) {
++      moduleScript.nonce = script.nonce;
++    }
++    moduleScript.textContent = await transformScript(script, index);
++    script.after(moduleScript);
++  }
++}
++
++export default run;
++
++if (typeof document !== "undefined") {
++  if (document.readyState === "loading") {
++    document.addEventListener("DOMContentLoaded", () => run(), { once: true });
++  } else {
++    run();
++  }
++}
+diff --git a/core/Eventbus.cjs b/core/Eventbus.cjs
+new file mode 100644
+index 0000000..8b13789
+--- /dev/null
++++ b/core/Eventbus.cjs
+@@ -0,0 +1 @@
++
+diff --git a/core/ai-kernel.js b/core/ai-kernel.js
+new file mode 100644
+index 0000000..fa49269
+--- /dev/null
++++ b/core/ai-kernel.js
+@@ -0,0 +1,24 @@
++class AIKernel {
++  constructor(bus) {
++    this.bus = bus;
++  }
++
++  interpret(input) {
++    if (input.includes("wallet")) {
++      return { view: "wallet", mode: "htm" };
++    }
++
++    if (input.includes("report")) {
++      return { view: "report", mode: "haml" };
++    }
++
++    return { view: "dashboard", mode: "htm" };
++  }
++
++  run(input) {
++    const decision = this.interpret(input);
++    this.bus.emit("ui:update", decision);
++  }
++}
++
++module.exports = AIKernel;
+diff --git a/dist/index.js b/dist/index.js
+new file mode 100644
+index 0000000..3880ecd
+--- /dev/null
++++ b/dist/index.js
+@@ -0,0 +1,12 @@
++var path = require('path');
++var fs = require('fs');
++var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
++var simple = require(lib+'/simple_math.js');
++var advanced = require(lib+'/advanced_math.js');
++module.exports ={
++	addition: simple.addition;
++	substraction: simple.substraction;
++	multiplication: advanced.multiplication;
++	division: advanced.division;
++	fibonacci: advanced.fibonacci;
++}
+diff --git a/doc/index.htm b/doc/index.htm
+new file mode 100644
+index 0000000..019fab9
+--- /dev/null
++++ b/doc/index.htm
+@@ -0,0 +1,39 @@
++<!--https://github.com/auraecosystem/main.git--!>
++<!doctype html>
++<html lang="en">
++  <head>
++    <meta charset="UTF-8" />
++    <script type="importmap">
++      {
++        "imports": {
++          "preact": "https://unpkg.com/preact@10.25.4/dist/preact.module.js",
++          "preact/hooks": "https://unpkg.com/preact@10.25.4/hooks/dist/hooks.module.js",
++          "htm": "https://unpkg.com/htm@3.1.1/dist/htm.module.js"
++           "esm": "https://esm.unpkg.com/:package@:version/:subpath"
++        }
++      }
++    </script>
++  </head>
++  <body>
++    <script type="module">
++      import { h, render } from "preact";
++      import { useState } from "preact/hooks";
++      import htm from "htm";
++
++      const html = htm.bind(h);
++
++      function App() {
++        let [count, setCount] = useState(0);
++
++        return html`
++          <div>
++            <p>Count: ${count}</p>
++            <button onClick=${() => setCount(count + 1)}>Increment</button>
++          </div>
++        `;
++      }
++
++      render(html`<${App} />`, document.body);
++    </script>
++  </body>
++</html>
+diff --git a/doc/readme.rst b/doc/readme.rst
+index db1f668..6779315 100644
+--- a/doc/readme.rst
++++ b/doc/readme.rst
+@@ -198,3 +198,16 @@ Files are cached on Cloudflare's global content-delivery network based on their
+ URLs that do not specify a fully resolved package version number redirect to one that does. This is the latest version when none is specified, or the maximum satisfying version when a semver range is given. For the best chance of getting a cache hit, use the full package version number and file path in your UNPKG URLs instead of an npm tag or semver range.
+ For example, a URL like unpkg.com/preact@10 will not be a direct cache hit because UNPKG needs to resolve the version 10 to the latest matching version of Preact published with that major, plus it needs to figure out which file to serve. So a short URL like this will always cause a redirect to the permanent URL for that resource. If you need to make sure you hit the cache, use a fixed version number and the full file path, like unpkg.com/preact@10.5.0/dist/preact.min.js.
+ About
++
++var path = require('path');
++var fs = require('fs');
++var lib = path.join(path.dirname(fs.realpathSync(__filename)), '../lib');
++var simple = require(lib+'/simple_math.js');
++var advanced = require(lib+'/advanced_math.js');
++module.exports ={
++	addition: simple.addition;
++	substraction: simple.substraction;
++	multiplication: advanced.multiplication;
++	division: advanced.division;
++	fibonacci: advanced.fibonacci;
++}
+diff --git a/index.html b/index.html
+new file mode 100644
+index 0000000..6fb7ab1
+--- /dev/null
++++ b/index.html
+@@ -0,0 +1,42 @@
++<!DOCTYPE html>
++<html>
++<head>
++  <script type="importmap">
++  {
++    "imports": {
++      "preact": "https://unpkg.com/preact@10.25.4/dist/preact.module.js",
++      "preact/hooks": "https://unpkg.com/preact@10.25.4/hooks/dist/hooks.module.js",
++      "htm": "https://unpkg.com/htm@3.1.1/dist/htm.module.js"
++   
++        }
++  },
++  </script>
++</head>
++
++<body>
++  <div id="app"></div>
++
++  <script type="module">
++    import { h, render } from "preact";
++    import { useState } from "preact/hooks";
++    import htm from "htm";
++
++    const html = htm.bind(h);
++
++    function App() {
++      const [view, setView] = useState("dashboard");
++
++      window.__setView = setView;
++
++      return html`
++        <div>
++          <h1>Web4 UI</h1>
++          <p>Current View: ${view}</p>
++        </div>
++      `;
++    }
++
++    render(html`<${App} />`, document.getElementById("app"));
++  </script>
++</body>
++</html>
+diff --git a/lib/advanced_math.js b/lib/advanced_math.js
+new file mode 100644
+index 0000000..8b13789
+--- /dev/null
++++ b/lib/advanced_math.js
+@@ -0,0 +1 @@
++
+diff --git a/lib/simple_math.js b/lib/simple_math.js
+new file mode 100644
+index 0000000..8b13789
+--- /dev/null
++++ b/lib/simple_math.js
+@@ -0,0 +1 @@
++
+diff --git a/runtime/Controller.cjs b/runtime/Controller.cjs
+new file mode 100644
+index 0000000..358ab50
+--- /dev/null
++++ b/runtime/Controller.cjs
+@@ -0,0 +1,61 @@
++class RuntimeController {
++  constructor({ kernel, bus, logger }) {
++    this.kernel = kernel;
++    this.bus = bus;
++    this.logger = logger;
++
++    this.state = {
++      auth: "unknown",
++      busy: false,
++      quota: null,
++      features: {}
++    };
++
++    this.subscriptions = [];
++  }
++
++  start() {
++    this.logger?.info("Runtime starting...");
++
++    this.subscribe("auth:change", this.onAuthChange.bind(this));
++    this.subscribe("quota:update", this.onQuotaUpdate.bind(this));
++    this.subscribe("system:busy", this.onBusy.bind(this));
++
++    this.kernel.start();
++  }
++
++  subscribe(event, handler) {
++    this.bus.on(event, handler);
++    this.subscriptions.push({ event, handler });
++  }
++
++  onAuthChange(status) {
++    this.state.auth = status;
++    this.render();
++  }
++
++  onQuotaUpdate(quota) {
++    this.state.quota = quota;
++    this.render();
++  }
++
++  onBusy(flag) {
++    this.state.busy = flag;
++    this.render();
++  }
++
++  render() {
++    this.bus.emit("ui:update", {
++      state: this.state
++    });
++  }
++
++  stop() {
++    this.logger?.info("Runtime stopping...");
++    this.subscriptions.forEach(({ event, handler }) => {
++      this.bus.off(event, handler);
++    });
++  }
++}
++
++module.exports = RuntimeController;
+diff --git a/src/Main.cjs b/src/Main.cjs
+new file mode 100644
+index 0000000..32af018
+--- /dev/null
++++ b/src/Main.cjs
+@@ -0,0 +1,44 @@
++const EventBus = require("./core/EventBus");
++const RuntimeController = require("./runtime/RuntimeController");
++const AiKernel = require("./kernel/AiKernel");
++const StatusHUD = require("./ui/StatusHUD");
++
++function bootstrap() {
++  const bus = new EventBus();
++
++  const kernel = new AiKernel({
++    bus,
++    providers: {
++      github: {
++        async preSignIn() {
++          return {
++            userCode: "ABCD-1234",
++            verificationURL: new URL("https://github.com/login/device")
++          };
++        },
++        async completeSignIn() {
++          return {
++            status: "logged_in",
++            quota: { used: 10, limit: 100 }
++          };
++        },
++        signOutAll() {}
++      }
++    }
++  });
++
++  const runtime = new RuntimeController({
++    kernel,
++    bus,
++    logger: console
++  });
++
++  new StatusHUD(bus);
++
++  runtime.start();
++
++  // simulate auth flow
++  setTimeout(() => kernel.signIn(), 2000);
++}
++
++bootstrap();
+diff --git a/src/_pages/index.haml b/src/_pages/index.haml
+new file mode 100644
+index 0000000..e54e2df
+--- /dev/null
++++ b/src/_pages/index.haml
+@@ -0,0 +1,93 @@
++!!! 5
++%html(lang="en")
++  %head
++    %meta(charset="utf-8")
++    %meta(name="viewport" content="width=device-width, initial-scale=1")
++
++    %title Web4 AI Runtime Dashboard
++
++    / Styles + UI engine hooks
++    %link(rel="stylesheet" href="/assets/styles.css")
++    %script(type="module" src="/runtime/bootstrap.js")
++
++  %body#app(data-theme="dark")
++
++    / =========================
++    / TOP STATUS BAR
++    / =========================
++    %header.status-bar
++      .left
++        %h1.logo Web4 AI
++        %span.status-indicator(data-bind="system.status") ● Running
++
++      .center
++        %input.search-box(type="text" placeholder="Ask the runtime...")
++
++      .right
++        %button#auth-btn Sign In
++        %button#settings-btn ⚙
++
++    / =========================
++    / MAIN LAYOUT
++    / =========================
++    %main.layout
++
++      / LEFT PANEL - SYSTEM STATE
++      %aside.panel.left
++        %h2 System State
++
++        .card
++          %h3 Auth
++          %p(data-bind="auth.status") Unknown
++
++        .card
++          %h3 Quota
++          %p(data-bind="quota.status") Loading...
++
++        .card
++          %h3 Kernel
++          %p(data-bind="kernel.state") Idle
++
++      / CENTER PANEL - AI WORKSPACE
++      %section.panel.center
++
++        %div.workspace
++
++          %h2 AI Workspace
++
++          / Live output stream
++          %div.output-stream#output
++            %p Waiting for runtime events...
++
++          / Input box for agent interaction
++          %textarea#prompt(placeholder="Run a command in the AI kernel...")
++
++          %button#run-btn Run
++
++      / RIGHT PANEL - TOOLING / PLUGINS
++      %aside.panel.right
++        %h2 Tools
++
++        .tool-list
++          .tool
++            %span GitHub Copilot
++            %button(data-action="toggle") Enable
++
++          .tool
++            %span Fadaka Wallet
++            %button(data-action="open") Open
++
++          .tool
++            %span Web4 Runtime
++            %button(data-action="inspect") Inspect
++
++    / =========================
++    / FOOTER HUD
++    / =========================
++    %footer.hud
++
++      .hud-left
++        %span#event-log Listening for events...
++
++      .hud-right
++        %span.version v1.0 Web4 Kernel
+diff --git a/ui/statushud.cjs b/ui/statushud.cjs
+new file mode 100644
+index 0000000..f9ca69c
+--- /dev/null
++++ b/ui/statushud.cjs
+@@ -0,0 +1,25 @@
++class StatusHUD {
++  constructor(bus) {
++    this.bus = bus;
++
++    this.state = null;
++
++    this.bus.on("ui:update", ({ state }) => {
++      this.state = state;
++      this.render();
++    });
++  }
++
++  render() {
++    if (!this.state) return;
++
++    console.clear();
++
++    console.log("=== WEB4 AI STATUS ===");
++    console.log("Auth:", this.state.auth);
++    console.log("Busy:", this.state.busy);
++    console.log("Quota:", this.state.quota);
++  }
++}
++
++module.exports = StatusHUD;
