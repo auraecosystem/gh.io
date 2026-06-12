@@ -1,0 +1,206 @@
+  <?xml version="1.0" encoding="UTF-8"?>
+   <key-chains
+       xmlns="urn:ietf:params:xml:ns:yang:ietf-key-chain">
+     <key-chain>
+       <name>bgp-key-chain</name>
+       <description>"An example of TCP-AO configuration for BGP"</descr\
+   iption>
+       <key>
+         <key-id>55</key-id>
+         <lifetime>
+
+Jethanandani, et al.    Expires 3 September 2026              [Page 184]
+Internet-Draft               BGP YANG Model                   March 2026
+
+           <send-lifetime>
+             <start-date-time>2017-01-01T00:00:00Z</start-date-time>
+             <end-date-time>2017-02-01T00:00:00Z</end-date-time>
+           </send-lifetime>
+           <accept-lifetime>
+             <start-date-time>2016-12-31T23:59:55Z</start-date-time>
+             <end-date-time>2017-02-01T00:00:05Z</end-date-time>
+           </accept-lifetime>
+         </lifetime>
+         <crypto-algorithm>aes-cmac-prf-128</crypto-algorithm>
+         <key-string>
+           <keystring>testvector</keystring>
+         </key-string>
+         <authentication
+             xmlns="urn:ietf:params:xml:ns:yang:ietf-tcp">
+           <keychain>bgp-key-chain</keychain>
+           <ao>
+             <send-id>65</send-id>
+             <recv-id>87</recv-id>
+           </ao>
+         </authentication>
+       </key>
+       <key>
+         <key-id>56</key-id>
+         <lifetime>
+           <send-lifetime>
+             <start-date-time>2017-01-01T00:00:00Z</start-date-time>
+             <end-date-time>2017-02-01T00:00:00Z</end-date-time>
+           </send-lifetime>
+           <accept-lifetime>
+             <start-date-time>2016-12-31T23:59:55Z</start-date-time>
+             <end-date-time>2017-02-01T00:00:05Z</end-date-time>
+           </accept-lifetime>
+         </lifetime>
+         <crypto-algorithm>aes-cmac-prf-128</crypto-algorithm>
+         <key-string>
+           <keystring>testvector</keystring>
+         </key-string>
+         <authentication
+             xmlns="urn:ietf:params:xml:ns:yang:ietf-tcp">
+           <keychain>bgp-key-chain</keychain>
+           <ao>
+             <send-id>65</send-id>
+             <recv-id>87</recv-id>
+           </ao>
+         </authentication>
+       </key>
+     </key-chain>
+
+Jethanandani, et al.    Expires 3 September 2026              [Page 185]
+Internet-Draft               BGP YANG Model                   March 2026
+
+   </key-chains>
+
+   <routing
+       xmlns="urn:ietf:params:xml:ns:yang:ietf-routing">
+     <control-plane-protocols>
+       <control-plane-protocol>
+         <type
+             xmlns:bgp="urn:ietf:params:xml:ns:yang:ietf-bgp">bgp:bgp</\
+   type>
+         <name>name:BGP</name>
+         <bgp
+             xmlns="urn:ietf:params:xml:ns:yang:ietf-bgp">
+           <global>
+             <as>64496</as>
+             <afi-safis>
+               <afi-safi>
+                 <name
+                     xmlns:bt=
+                     "urn:ietf:params:xml:ns:yang:iana-bgp-types">bt:ip\
+   v6-unicast</name>
+               </afi-safi>
+             </afi-safis>
+           </global>
+           <neighbors>
+             <neighbor>
+               <remote-address>2001:db8::</remote-address>
+               <enabled>true</enabled>
+               <transport>
+                 <secure-session>
+                   <enabled>true</enabled>
+                   <options>
+                     <ao-keychain>bgp-key-chain</ao-keychain>
+                   </options>
+                 </secure-session>
+               </transport>
+               <peer-as>64497</peer-as>
+               <description>"Peer Router B"</description>
+               <timers>
+                 <hold-time>120</hold-time>
+                 <keepalive>70</keepalive>
+               </timers>
+               <afi-safis>
+                 <afi-safi>
+                   <name
+                       xmlns:bt=
+                       "urn:ietf:params:xml:ns:yang:iana-bgp-types">bt:\
+   ipv6-unicast</name>
+                 </afi-safi>
+
+Jethanandani, et al.    Expires 3 September 2026              [Page 186]
+Internet-Draft               BGP YANG Model                   March 2026
+
+               </afi-safis>
+             </neighbor>
+           </neighbors>
+         </bgp>
+       </control-plane-protocol>
+     </control-plane-protocols>
+   </routing>
+
+A.4.  VRF Configuration
+
+   This example shows how BGP can be configured for two VRFs, red and
+   blue.  In this case, the two network instances share a common AS, and
+   distinguish between the instances using the router id.
+
+   [note: '\' line wrapping for formatting only]
+
+   <?xml version="1.0" encoding="UTF-8"?>
+   <network-instances
+       xmlns="urn:ietf:params:xml:ns:yang:ietf-network-instance">
+     <network-instance>
+       <name>vrf-red</name>
+       <vrf-root>
+         <routing
+             xmlns="urn:ietf:params:xml:ns:yang:ietf-routing">
+           <router-id>192.0.2.1</router-id>
+           <control-plane-protocols>
+             <control-plane-protocol>
+               <type
+                   xmlns:bgp=
+                   "urn:ietf:params:xml:ns:yang:ietf-bgp">bgp:bgp</type\
+   >
+               <name>BGP</name>
+               <bgp
+                   xmlns="urn:ietf:params:xml:ns:yang:ietf-bgp">
+                 <global>
+                   <as>64496</as>
+                   <afi-safis>
+                     <afi-safi>
+                       <name
+                           xmlns:bt=
+                           "urn:ietf:params:xml:ns:yang:iana-bgp-types"\
+   >bt:ipv4-unicast</name>
+                     </afi-safi>
+                   </afi-safis>
+                 </global>
+               </bgp>
+             </control-plane-protocol>
+           </control-plane-protocols>
+
+Jethanandani, et al.    Expires 3 September 2026              [Page 187]
+Internet-Draft               BGP YANG Model                   March 2026
+
+         </routing>
+       </vrf-root>
+     </network-instance>
+     <network-instance>
+       <name>vrf-blue</name>
+       <vrf-root>
+         <routing
+             xmlns="urn:ietf:params:xml:ns:yang:ietf-routing">
+           <router-id>192.0.2.2</router-id>
+           <control-plane-protocols>
+             <control-plane-protocol>
+               <type
+                   xmlns:bgp=
+                   "urn:ietf:params:xml:ns:yang:ietf-bgp">bgp:bgp</type\
+   >
+               <name>BGP</name>
+               <bgp
+                   xmlns="urn:ietf:params:xml:ns:yang:ietf-bgp">
+                 <global>
+                   <as>64496</as>
+                   <afi-safis>
+                     <afi-safi>
+                       <name
+                           xmlns:bt=
+                           "urn:ietf:params:xml:ns:yang:iana-bgp-types"\
+   >bt:ipv4-unicast</name>
+                     </afi-safi>
+                   </afi-safis>
+                 </global>
+               </bgp>
+             </control-plane-protocol>
+           </control-plane-protocols>
+         </routing>
+       </vrf-root>
+     </network-instance>
+   </network-instances>
