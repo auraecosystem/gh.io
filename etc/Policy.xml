@@ -1,0 +1,224 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+   <routing-policy
+       xmlns="urn:ietf:params:xml:ns:yang:ietf-routing-policy">
+     <defined-sets>
+       <prefix-sets>
+         <prefix-set>
+           <name>L0andL1</name>
+           <mode>ipv4</mode>
+           <prefixes>
+             <prefix-list>
+               <ip-prefix>192.0.2.1/32</ip-prefix>
+               <mask-length-lower>32</mask-length-lower>
+               <mask-length-upper>32</mask-length-upper>
+             </prefix-list>
+             <prefix-list>
+               <ip-prefix>192.0.2.5/32</ip-prefix>
+               <mask-length-lower>32</mask-length-lower>
+               <mask-length-upper>32</mask-length-upper>
+             </prefix-list>
+           </prefixes>
+         </prefix-set>
+         <prefix-set>
+           <name>L2andL3</name>
+           <mode>ipv4</mode>
+           <prefixes>
+             <prefix-list>
+               <ip-prefix>192.0.2.9/32</ip-prefix>
+
+Jethanandani, et al.    Expires 3 September 2026              [Page 189]
+Internet-Draft               BGP YANG Model                   March 2026
+
+               <mask-length-lower>32</mask-length-lower>
+               <mask-length-upper>32</mask-length-upper>
+             </prefix-list>
+             <prefix-list>
+               <ip-prefix>192.0.2.13/32</ip-prefix>
+               <mask-length-lower>32</mask-length-lower>
+               <mask-length-upper>32</mask-length-upper>
+             </prefix-list>
+           </prefixes>
+         </prefix-set>
+         <prefix-set>
+           <name>L4</name>
+           <mode>ipv4</mode>
+           <prefixes>
+             <prefix-list>
+               <ip-prefix>192.0.2.17/32</ip-prefix>
+               <mask-length-lower>32</mask-length-lower>
+               <mask-length-upper>32</mask-length-upper>
+             </prefix-list>
+           </prefixes>
+         </prefix-set>
+       </prefix-sets>
+     </defined-sets>
+     <policy-definitions>
+       <policy-definition>
+         <name>TO_R2</name>
+         <statements>
+           <statement>
+             <name>10</name>
+             <conditions>
+               <match-prefix-set>
+                 <prefix-set>L0andL1</prefix-set>
+               </match-prefix-set>
+             </conditions>
+             <actions>
+               <bgp-actions
+                   xmlns="urn:ietf:params:xml:ns:yang:ietf-bgp-policy">\
+
+                 <set-community>
+                   <options>add</options>
+                   <communities>11:11</communities>
+                 </set-community>
+               </bgp-actions>
+             </actions>
+           </statement>
+           <statement>
+             <name>20</name>
+             <conditions>
+
+Jethanandani, et al.    Expires 3 September 2026              [Page 190]
+Internet-Draft               BGP YANG Model                   March 2026
+
+               <match-prefix-set>
+                 <prefix-set>L2andL3</prefix-set>
+               </match-prefix-set>
+             </conditions>
+             <actions>
+               <bgp-actions
+                   xmlns="urn:ietf:params:xml:ns:yang:ietf-bgp-policy">\
+
+                 <set-community>
+                   <options>remove</options>
+                   <communities>11:11</communities>
+                   <communities>22:22</communities>
+                 </set-community>
+               </bgp-actions>
+             </actions>
+           </statement>
+           <statement>
+             <name>30</name>
+             <conditions>
+               <match-prefix-set>
+                 <prefix-set>L4</prefix-set>
+               </match-prefix-set>
+             </conditions>
+             <actions>
+               <bgp-actions
+                   xmlns="urn:ietf:params:xml:ns:yang:ietf-bgp-policy">\
+
+                 <set-community>
+                   <options>replace</options>
+                   <communities>33:33</communities>
+                 </set-community>
+               </bgp-actions>
+             </actions>
+           </statement>
+         </statements>
+       </policy-definition>
+     </policy-definitions>
+   </routing-policy>
+
+   <routing
+       xmlns="urn:ietf:params:xml:ns:yang:ietf-routing"
+       xmlns:bt="urn:ietf:params:xml:ns:yang:iana-bgp-types"
+       xmlns:bct="urn:ietf:params:xml:ns:yang:iana-bgp-community-types"\
+   >
+     <control-plane-protocols>
+       <control-plane-protocol>
+         <type
+             xmlns:bgp="urn:ietf:params:xml:ns:yang:ietf-bgp">bgp:bgp</\
+
+Jethanandani, et al.    Expires 3 September 2026              [Page 191]
+Internet-Draft               BGP YANG Model                   March 2026
+
+   type>
+         <name>BGP</name>
+         <bgp
+             xmlns="urn:ietf:params:xml:ns:yang:ietf-bgp">
+           <global>
+             <as>1</as>
+             <afi-safis>
+               <afi-safi>
+                 <name>bt:ipv4-unicast</name>
+               </afi-safi>
+             </afi-safis>
+           </global>
+           <neighbors>
+             <neighbor>
+               <remote-address>10.1.1.2</remote-address>
+               <peer-as>2</peer-as>
+               <afi-safis>
+                 <afi-safi>
+                   <name>bt:ipv4-unicast</name>
+                 </afi-safi>
+               </afi-safis>
+               <send-community>bct:standard</send-community>
+               <apply-policy>
+                 <export-policy>TO_R2</export-policy>
+                 <default-export-policy>accept-route</default-export-po\
+   licy>
+               </apply-policy>
+             </neighbor>
+           </neighbors>
+         </bgp>
+       </control-plane-protocol>
+     </control-plane-protocols>
+   </routing>
+
+A.6.  BGP Policy - Match Next-hop and Set Community
+
+   In this example, a "next-hop-set" is configured using option "invert"
+   from "match-set-options" to match next-hop not equal to "192.0.2.2"
+   and then set community to 55:55.
+
+Jethanandani, et al.    Expires 3 September 2026              [Page 192]
+Internet-Draft               BGP YANG Model                   March 2026
+
+   [note: '\' line wrapping for formatting only]
+
+   <?xml version='1.0' encoding='UTF-8'?>
+     <routing-policy xmlns="urn:ietf:params:xml:ns:yang:ietf-routing-po\
+   licy">
+       <defined-sets>
+         <bgp-defined-sets xmlns="urn:ietf:params:xml:ns:yang:ietf-bgp-\
+   policy">
+           <next-hop-sets>
+             <next-hop-set>
+               <name>nexthop_not2</name>
+               <next-hop>192.0.2.2</next-hop>
+             </next-hop-set>
+           </next-hop-sets>
+         </bgp-defined-sets>
+       </defined-sets>
+       <policy-definitions>
+         <policy-definition>
+           <name>nexthop_not2_community</name>
+           <statements>
+             <statement>
+               <name>100</name>
+               <conditions>
+                 <bgp-conditions xmlns="urn:ietf:params:xml:ns:yang:iet\
+   f-bgp-policy">
+                   <match-next-hop-set>
+                     <next-hop-set>nexthop_not2</next-hop-set>
+                     <match-set-options>invert</match-set-options>
+                   </match-next-hop-set>
+                 </bgp-conditions>
+               </conditions>
+               <actions>
+                 <bgp-actions xmlns="urn:ietf:params:xml:ns:yang:ietf-b\
+   gp-policy">
+                   <set-community>
+                     <options>add</options>
+                     <communities>55:55</communities>                  \
+
+                   </set-community>
+                 </bgp-actions>
+               </actions>
+             </statement>
+           </statements>
+         </policy-definition>
+       </policy-definitions>
+     </routing-policy>
