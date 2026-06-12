@@ -1,0 +1,2 @@
+cd myportfolio
+git init
