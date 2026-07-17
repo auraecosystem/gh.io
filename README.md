@@ -1,3 +1,4 @@
+```javascript
 <script type="importmap">
 {
   "imports": {
