@@ -4,7 +4,7 @@ UNPKG is a fast, global content delivery network (CDN) for everything published 
 
 ## URL Format
 
-```
+```bash
 https://unpkg.com/:package@:version/:file
 ```
 
@@ -16,7 +16,7 @@ https://unpkg.com/:package@:version/:file
 
 ### Examples
 
-```text
+```zsh
 https://unpkg.com/preact@10.26.4/dist/preact.min.js
 https://unpkg.com/react@18.3.1/umd/react.production.min.js
 https://unpkg.com/three@0.174.0/build/three.module.min.js
@@ -24,7 +24,7 @@ https://unpkg.com/three@0.174.0/build/three.module.min.js
 
 You can also use:
 
-```text
+```zsh
 https://unpkg.com/preact@latest/dist/preact.min.js
 https://unpkg.com/react@^18/umd/react.production.min.js
 https://unpkg.com/vue/dist/vue.esm-browser.prod.js
@@ -38,7 +38,7 @@ If no version is specified, the latest published version is used.
 
 Append a trailing slash (`/`) to browse package contents.
 
-```text
+```bash
 https://unpkg.com/react/
 https://unpkg.com/preact/src/
 https://unpkg.com/react-router/
@@ -46,7 +46,7 @@ https://unpkg.com/react-router/
 
 Browse older versions by including the version number.
 
-```text
+```bash
 https://unpkg.com/react@18/
 https://unpkg.com/react-router@5/
 ```
