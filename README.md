@@ -1,6 +1,6 @@
-<a/>
-<iframe  src="https://snapcraft.io/jupyterlab-desktop/embedded?button=black&channels=true&summary=true&screenshot=true" frameborder="0" width="100%" height="1080px" style="border: 1px solid #CCC; border-radius: 2px;">
-  
+```html
+<iframe src="https://snapcraft.io/jupyterlab-desktop/embedded?button=black&channels=true&summary=true&screenshot=true" frameborder="0" width="100%" height="1080px" style="border: 1px solid #CCC; border-radius: 2px;"></iframe>
+```
 </iframe>
 
 
@@ -21,9 +21,6 @@
 }
 </script>
 ```
-—-
-<iframe>
-<a
-<iframe src="https://snapcraft.io/jupyterlab-desktop/embedded?button=black&channels=true&summary=true&screenshot=true" frameborder="0" width="100%" height="1080px" style="border: 1px solid #CCC; border-radius: 2px;" >
-</iframe>
-—-
+<html
+<iframe src="https://snapcraft.io/jupyterlab-desktop/embedded?button=black&channels=true&summary=true&screenshot=true" frameborder="0" width="100%" height="1080px" style="border: 1px solid #CCC; border-radius: 2px;" ><iframe\></html>
+
