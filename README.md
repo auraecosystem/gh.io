@@ -1,3 +1,5 @@
+[![JupyterLab Desktop Preview](https://assets.ubuntu.com/v1/some-image-url.png)](https://snapcraft.io/jupyterlab-desktop)
+
 ```html
 <iframe src="https://snapcraft.io/jupyterlab-desktop/embedded?button=black&channels=true&summary=true&screenshot=true" frameborder="0" width="100%" height="1080px" style="border: 1px solid #CCC; border-radius: 2px;"></iframe>
 ```
