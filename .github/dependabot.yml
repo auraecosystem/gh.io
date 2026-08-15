@@ -1,0 +1,104 @@
+# .github/dependabot.yml
+# Reference: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+
+updates:
+  # =================================================================
+  # 1. GitHub Actions (Universal - applies to almost all repos)
+  # =================================================================
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    # Bundle all GitHub Action bumps into a single weekly PR
+    groups:
+      actions-all:
+        patterns:
+          - "*"
+
+  # =================================================================
+  # 2. Node.js / JavaScript / TypeScript (npm, yarn, pnpm)
+  # =================================================================
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "javascript"
+    # Prevent major breaking changes from auto-creating PRs (optional)
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    # Group non-breaking updates to reduce PR noise
+    groups:
+      dev-dependencies:
+        dependency-type: "development"
+      minor-and-patch-updates:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # =================================================================
+  # 3. Docker Containers
+  # =================================================================
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "docker"
+
+  # =================================================================
+  # 4. Python (pip / pipenv / poetry) — Uncomment if needed
+  # =================================================================
+  # - package-ecosystem: "pip"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #   open-pull-requests-limit: 5
+  #   labels:
+  #     - "dependencies"
+  #     - "python"
+  #   groups:
+  #     minor-and-patch:
+  #       update-types: ["minor", "patch"]
+
+  # =================================================================
+  # 5. Go Modules — Uncomment if needed
+  # =================================================================
+  # - package-ecosystem: "gomod"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #   open-pull-requests-limit: 5
+  #   labels:
+  #     - "dependencies"
+  #     - "go"
+
+  # =================================================================
+  # 6. Rust (Cargo) — Uncomment if needed
+  # =================================================================
+  # - package-ecosystem: "cargo"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #   open-pull-requests-limit: 5
+  #   labels:
+  #     - "dependencies"
+  #     - "rust"
