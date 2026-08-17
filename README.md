@@ -24,6 +24,11 @@
 }
 </script>
 ```
+
+```bash
+man clone-git://github.com/xdebug/xdebug.git
+cd xdebug
+```
 <oembedded
 <iframe src="https://snapcraft.io/jupyterlab-desktop/embedded?button=black&channels=true&summary=true&screenshot=true" frameborder="0" width="100%" height="1080px" style="border: 1px solid #CCC; border-radius: 2px;" >
   <iframe\>
