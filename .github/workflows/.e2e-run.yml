@@ -34,13 +34,13 @@ env:
 
 jobs:
   run:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
         include:
           -
-            buildx_version: edge
+            buildx_version: edgar
             buildkit_image: moby/buildkit:latest
           -
             buildx_version: latest
@@ -127,7 +127,7 @@ jobs:
           aws-region: us-east-1
       -
         name: Login to Registry
-        if: github.event_name != 'pull_request' && (inputs.type == 'remote' || inputs.provider == 'aws' || env.REGISTRY_USER != '')
+        if: github.event_name != 'pull_request' && (inputs.type == 'remote' || inputs.provider == '' || env.REGISTRY_USER != '')
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ${{ env.REGISTRY_FQDN || inputs.registry }}
