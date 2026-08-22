@@ -1,0 +1,60 @@
+{
+  "name": "web4-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Decentralized Desktop Operating System bridging Web3 identity, x402 paywalls, Anchor escrow, and autonomous AI agents.",
+  "author": "Seriki Yakub (KUBU LEE)",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest run",
+    "preview": "vite preview --port 4173",
+    "anchor:build": "cd programs/escrow && anchor build",
+    "anchor:deploy": "cd programs/escrow && anchor deploy --provider.cluster devnet"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.30.1",
+    "@fleek-platform/cli": "^0.1.0",
+    "@reown/appkit": "^1.0.0",
+    "@reown/appkit-adapter-solana": "^1.0.0",
+    "@reown/appkit-adapter-wagmi": "^1.0.0",
+    "@solana/spl-token": "^0.4.8",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/wallet-adapter-react-ui": "^0.9.35",
+    "@solana/web3.js": "^1.95.3",
+    "@tanstack/react-query": "^5.51.1",
+    "@web3-storage/w3up-client": "^12.4.0",
+    "clsx": "^2.1.1",
+    "eliza": "^0.1.0",
+    "lucide-react": "^0.428.0",
+    "next": "^14.2.5",
+    "pinata": "^1.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-draggable": "^4.4.6",
+    "react-rnd": "^10.4.10",
+    "tailwind-merge": "^2.5.2",
+    "viem": "^2.19.8",
+    "wagmi": "^2.12.5",
+    "x402-solana": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.15",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.5",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.9",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
