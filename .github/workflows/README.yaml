@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   update-readme:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install feedparser certifi
 
-      - name: Update README
+      - name: Update-README
         run: |
           python ./update_readme.py
 
