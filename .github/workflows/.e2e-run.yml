@@ -6,136 +6,289 @@ on:
       id:
         required: false
         type: string
+        description: "Environment ID for local test setup"
       type:
         required: true
         type: string
+        description: "Test type: 'local' or 'remote'"
       provider:
         required: true
         type: string
+        description: "Registry provider: 'aws', 'gitlab', or custom registry"
       name:
         required: true
         type: string
+        description: "Name of the registry system to test"
       registry:
         required: false
         type: string
+        description: "Registry URL (e.g., ghcr.io)"
       slug:
         required: false
         type: string
+        description: "Registry slug for image tagging"
+      build-timeout:
+        required: false
+        type: string
+        default: "3600"
+        description: "Build timeout in seconds"
+      debug:
+        required: false
+        type: boolean
+        default: false
+        description: "Enable debug logging"
     secrets:
       registry_username:
         required: false
+        description: "Registry username"
       registry_password:
         required: false
+        description: "Registry password"
+      aws_role_arn:
+        required: false
+        description: "AWS IAM role ARN for OIDC authentication"
 
 env:
   HARBOR_VERSION: v2.13.2
   NEXUS_VERSION: 3.47.1
   DISTRIBUTION_VERSION: 3.0.0
+  BUILDX_CACHE_DIR: /tmp/buildx-cache
+  DOCKER_BUILDKIT: 1
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.provider }}-${{ inputs.type }}
+  cancel-in-progress: true
 
 jobs:
+  validate-inputs:
+    name: Validate Workflow Inputs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate required inputs
+        run: |
+          if [[ "${{ inputs.type }}" != "local" && "${{ inputs.type }}" != "remote" ]]; then
+            echo "❌ Error: 'type' must be 'local' or 'remote'"
+            exit 1
+          fi
+          if [[ "${{ inputs.type }}" == "local" && -z "${{ inputs.id }}" ]]; then
+            echo "❌ Error: 'id' is required when type is 'local'"
+            exit 1
+          fi
+          echo "✅ Input validation passed"
+
   run:
-    runs-on: self-hosted
+    name: E2E Test (${{ inputs.provider }} - ${{ matrix.buildx_version }})
+    needs: validate-inputs
+    runs-on: ${{ inputs.type == 'local' && 'self-hosted' || 'ubuntu-latest' }}
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
         include:
-          -
-            buildx_version: edgar
+          - buildx_version: edge
             buildkit_image: moby/buildkit:latest
-          -
-            buildx_version: latest
+            description: "Edge/Development"
+          - buildx_version: latest
             buildkit_image: moby/buildkit:buildx-stable-1
-          -
-            buildx_version: https://github.com/docker/buildx.git#master
+            description: "Latest Stable"
+          - buildx_version: https://github.com/docker/buildx.git#master
             buildkit_image: moby/buildkit:master
+            description: "Master Branch"
+    
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+
     steps:
-      -
-        name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      -
-        name: Set up env
-        if: inputs.type == 'local'
-        env:
-          ID: ${{ inputs.id }}
+      # Checkout
+      - name: Checkout code
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+
+      # Debug info
+      - name: Display debug information
+        if: inputs.debug || runner.debug
         run: |
-          cat ./.github/e2e/${ID}/env >> $GITHUB_ENV
-      -
-        # FIXME: Remove this once GitLab Registry accepts OCI artifact attestations
-        # whose subject points to a manifest pushed in the same build.
-        # https://github.com/docker/buildx/pull/3991
-        name: Set up GitLab env
+          echo "=== Workflow Inputs ==="
+          echo "Type: ${{ inputs.type }}"
+          echo "Provider: ${{ inputs.provider }}"
+          echo "Registry: ${{ inputs.registry }}"
+          echo "Buildx Version: ${{ matrix.buildx_version }}"
+          echo "Buildkit Image: ${{ matrix.buildkit_image }}"
+          echo ""
+          echo "=== System Information ==="
+          docker --version
+          docker buildx version || echo "Docker buildx not available yet"
+
+      # Environment setup
+      - name: Set up environment variables
+        if: inputs.type == 'local'
+        id: env-setup
+        run: |
+          if [ -f "./.github/e2e/${{ inputs.id }}/env" ]; then
+            cat ./.github/e2e/${{ inputs.id }}/env >> $GITHUB_ENV
+            echo "✅ Environment file loaded"
+          else
+            echo "⚠️ Environment file not found: ./.github/e2e/${{ inputs.id }}/env"
+            exit 1
+          fi
+
+      - name: Set up GitLab environment
         if: inputs.provider == 'gitlab'
         run: |
           echo "BUILDX_NO_DEFAULT_OCI_ARTIFACT=true" >> "$GITHUB_ENV"
-      -
-        name: Set up BuildKit config
+          echo "✅ GitLab environment configured"
+
+      # BuildKit configuration
+      - name: Set up BuildKit configuration
+        id: buildkit-config
         env:
           TYPE: ${{ inputs.type }}
+          DEBUG: ${{ inputs.debug }}
         run: |
-          touch /tmp/buildkitd.toml
+          set -e
+          mkdir -p /tmp/buildx
+          
+          cat > /tmp/buildkitd.toml <<'EOF'
+          [log]
+            level = "${{ inputs.debug && 'debug' || 'info' }}"
+          
+          EOF
+          
           if [ "${TYPE}" = "local" ]; then
-            echo -e "[registry.\"${{ env.REGISTRY_FQDN }}\"]\nhttp = true\ninsecure = true" > /tmp/buildkitd.toml
+            cat >> /tmp/buildkitd.toml <<'EOF'
+          [registry."${REGISTRY_FQDN}"]
+            http = true
+            insecure = true
+          EOF
+            echo "buildkit-config-created=true" >> $GITHUB_OUTPUT
           fi
-      -
-        name: Set up Docker daemon
+          
+          cat /tmp/buildkitd.toml
+
+      # Docker daemon configuration
+      - name: Configure Docker daemon for insecure registries
         if: inputs.type == 'local'
+        timeout-minutes: 5
         run: |
-          if [ ! -e /etc/docker/daemon.json ]; then
-            echo '{}' | sudo tee /etc/docker/daemon.json >/dev/null
-          fi
-          DOCKERD_CONFIG=$(jq '.+{"insecure-registries":["http://${{ env.REGISTRY_FQDN }}"]}' /etc/docker/daemon.json)
-          sudo tee /etc/docker/daemon.json <<<"$DOCKERD_CONFIG" >/dev/null
-          cat /etc/docker/daemon.json
-          sudo service docker restart
-      -
-        name: Install ${{ inputs.name }}
+          set -e
+          
+          # Backup original daemon config
+          sudo cp /etc/docker/daemon.json /etc/docker/daemon.json.bak || echo '{}' | sudo tee /etc/docker/daemon.json >/dev/null
+          
+          # Add insecure registry
+          DOCKERD_CONFIG=$(sudo jq '.+{"insecure-registries":["http://${{ env.REGISTRY_FQDN }}"],"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"3"}}' /etc/docker/daemon.json)
+          echo "$DOCKERD_CONFIG" | sudo tee /etc/docker/daemon.json >/dev/null
+          
+          echo "=== Docker Daemon Configuration ==="
+          cat /etc/docker/daemon.json | sudo tee /dev/null
+          
+          echo "Restarting Docker daemon..."
+          sudo systemctl restart docker
+          sleep 5
+          sudo systemctl is-active --quiet docker && echo "✅ Docker daemon restarted successfully" || exit 1
+
+      # Registry installation
+      - name: Install ${{ inputs.name }}
         if: inputs.type == 'local'
+        timeout-minutes: 30
         env:
           ID: ${{ inputs.id }}
         run: |
+          set -e
+          
+          if [ ! -f "./.github/e2e/${ID}/install.sh" ]; then
+            echo "❌ Install script not found: ./.github/e2e/${ID}/install.sh"
+            exit 1
+          fi
+          
+          echo "Installing ${{ inputs.name }}..."
           sudo -E bash ./.github/e2e/${ID}/install.sh
+          
+          # Fix Docker permissions
           sudo chown $(id -u):$(id -g) -R ~/.docker
-      -
-        name: Docker meta
+          
+          # Verify installation
+          echo "=== Verifying Installation ==="
+          docker ps || echo "⚠️ No containers running"
+          echo "✅ Installation completed"
+
+      # Generate metadata
+      - name: Generate Docker metadata
         id: meta
-        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        uses: docker/metadata-action@f7b4877f899b03614f45f34c108d87c638a67a8f # v5.1.0
         with:
           images: ${{ env.REGISTRY_SLUG || inputs.slug }}
           tags: |
             type=ref,event=branch,enable=${{ matrix.buildx_version == 'latest' && matrix.buildkit_image == 'moby/buildkit:buildx-stable-1' }}
             type=ref,event=tag,enable=${{ matrix.buildx_version == 'latest' && matrix.buildkit_image == 'moby/buildkit:buildx-stable-1' }}
-            type=raw,gh-runid-${{ github.run_id }}
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4.2.0
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+            type=raw,value=e2e-${{ matrix.description }}-${{ github.run_id }}-${{ github.run_attempt }}
+            type=sha,prefix={{branch}}-
+          labels: |
+            org.opencontainers.image.description=E2E Build Test
+            org.opencontainers.image.vendor=Aura Ecosystem
+            com.github.actions.e2e.provider=${{ inputs.provider }}
+            com.github.actions.e2e.type=${{ inputs.type }}
+            com.github.actions.e2e.buildx=${{ matrix.buildx_version }}
+
+      # Set up QEMU
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@49b3bc8e6bdd4e60387d725cdc4aeaa88d2a85286 # v4.2.1
+        with:
+          platforms: 386,amd64,arm/v6,arm/v7,arm64,ppc64le,s390x
+
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@14ab2c5acdd1b38b20589d37fb8cb9a1b1c62cc5 # v4.2.0
         with:
           version: ${{ matrix.buildx_version }}
-          buildkitd-config: /tmp/buildkitd.toml
-          buildkitd-flags: --debug --allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host
-          driver-opts: |
+          driver-options: |
             image=${{ matrix.buildkit_image }}
             network=host
-      -
-        name: Configure AWS credentials
+          buildkitd-flags: ${{ inputs.debug && '--debug' || '' }} --allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host
+          config-content: |
+            [registry."docker.io"]
+              mirrors = ["mirror.gcr.io"]
+
+      # AWS authentication (OIDC)
+      - name: Configure AWS credentials (OIDC)
         if: inputs.provider == 'aws'
-        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e46ea0db # v4.0.2
         with:
-          role-to-assume: arn:aws:iam::175142243308:role/official_gha_cicd
+          role-to-assume: ${{ secrets.aws_role_arn || 'arn:aws:iam::175142243308:role/official_gha_cicd' }}
           aws-region: us-east-1
-      -
-        name: Login to Registry
-        if: github.event_name != 'pull_request' && (inputs.type == 'remote' || inputs.provider == '' || env.REGISTRY_USER != '')
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+          token-format: aws4
+          role-duration-seconds: 3600
+
+      # ECR login for AWS
+      - name: Login to Amazon ECR
+        if: inputs.provider == 'aws'
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@062b18b96a7aabf0e95705900b2f3e305305e660 # v2.0.1
+
+      # Generic registry login
+      - name: Log in to registry
+        if: github.event_name != 'pull_request' && (inputs.type == 'remote' || inputs.provider == 'aws' || env.REGISTRY_USER != '')
+        uses: docker/login-action@9780b0c442fbb1117521dae4ceff5ec70b569d7 # v4.6.0
         with:
           registry: ${{ env.REGISTRY_FQDN || inputs.registry }}
           username: ${{ env.REGISTRY_USER || secrets.registry_username || (inputs.registry == 'ghcr.io' && github.actor) || '' }}
           password: ${{ env.REGISTRY_PASSWORD || secrets.registry_password || (inputs.registry == 'ghcr.io' && secrets.GITHUB_TOKEN) || '' }}
-          scope: ${{ inputs.type == 'remote' && inputs.registry == '' && '@push' || '' }}
-      -
-        name: Build and push
+          logout: true
+
+      # Build cache setup
+      - name: Set up build cache
+        run: |
+          mkdir -p ${{ env.BUILDX_CACHE_DIR }}
+          echo "Cache directory: ${{ env.BUILDX_CACHE_DIR }}"
+
+      # Build and push
+      - name: Build and push Docker image
+        id: build
+        timeout-minutes: ${{ fromJson(inputs.build-timeout) / 60 }}
         uses: ./
         with:
           context: ./test
@@ -144,5 +297,55 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY_SLUG || inputs.slug }}:master
-          cache-to: type=inline
+          cache-from: type=gha,scope=${{ inputs.provider }}-${{ inputs.type }}-${{ matrix.description }}
+          cache-to: type=gha,mode=max,scope=${{ inputs.provider }}-${{ inputs.type }}-${{ matrix.description }}
+          provenance: true
+          sbom: true
+          outputs: type=image,push-by-digest=${{ github.event_name != 'pull_request' }}
+
+      # Generate summary
+      - name: Create job summary
+        if: always()
+        run: |
+          echo "## E2E Test Result" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Provider | ${{ inputs.provider }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Type | ${{ inputs.type }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Buildx Version | ${{ matrix.buildx_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ job.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Run ID | ${{ github.run_id }} |" >> $GITHUB_STEP_SUMMARY
+
+      # Cleanup
+      - name: Clean up resources
+        if: always()
+        continue-on-error: true
+        run: |
+          echo "Cleaning up temporary files..."
+          rm -rf /tmp/buildkitd.toml /tmp/buildx-cache
+          
+          if [ "${{ inputs.type }}" == "local" ]; then
+            echo "Restoring Docker daemon configuration..."
+            sudo cp /etc/docker/daemon.json.bak /etc/docker/daemon.json || true
+            sudo systemctl restart docker || true
+          fi
+          
+          echo "✅ Cleanup completed"
+
+  # Final status check
+  status-check:
+    name: E2E Test Status
+    if: always()
+    needs: run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check test results
+        run: |
+          if [ "${{ needs.run.result }}" == "success" ]; then
+            echo "✅ All E2E tests passed!"
+            exit 0
+          else
+            echo "❌ E2E tests failed!"
+            exit 1
+          fi
