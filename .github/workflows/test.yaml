@@ -1,0 +1,78 @@
+name: flatpak
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install Flatpak and add Flathub remote
+        run: |
+          sudo add-apt-repository ppa:flatpak/stable -y
+          sudo apt-get update && sudo apt-get install -y flatpak
+          sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Generate package list
+        run: |
+          cat <<'EOF' > flatpak.txt
+          org.inkscape.Inkscape
+          com.wps.Office
+          com.obsproject.Studio
+          com.github.PintaProject.Pinta
+          com.visualstudio.code
+          us.zoom.Zoom
+          org.remmina.Remmina
+          org.videolan.VLC
+          org.gimp.GIMP
+          com.yubico.yubioath
+          com.xnview.XnViewMP
+          org.wireshark.Wireshark
+          com.poweriso.PowerISO
+          com.getpostman.Postman
+          org.neverball.Neverball
+          com.github.reds.LogisimEvolution
+          rest.insomnia.Insomnia
+          in.srev.guiscrcpy
+          io.github.shiftey.Desktop
+          org.fontforge.FontForge
+          org.gnome.eog
+          org.flameshot.Flameshot
+          org.gnome.FileRoller
+          org.gnome.baobab
+          com.jetbrains.CLion
+          com.gitlab.davem.ClamTk
+          org.audacityteam.Audacity
+          cc.arduino.arduinoide
+          com.github.tchx84.Flatseal
+          com.belmoussaoui.Decoder
+          com.belmoussaoui.Obfuscate
+          com.belmoussaoui.Authenticator
+          EOF
+          cat flatpak.txt
+
+      - name: Install Flatpak packages
+        run: |
+          while IFS= read -r package || [ -n "$package" ]; do
+            # Skip empty lines or comments
+            [ -z "$package" ] && continue
+            echo "::group::Installing $package"
+            sudo flatpak install flathub "$package" -y || echo "Failed to install $package"
+            echo "::endgroup::"
+          done < flatpak.txt
+
+      - name: List installed Flatpaks
+        run: sudo flatpak list --show-details --verbose
+
+      - name: Inspect package permissions
+        run: |
+          while IFS= read -r package || [ -n "$package" ]; do
+            [ -z "$package" ] && continue
+            echo "::group::Permissions for $package"
+            sudo flatpak info --show-permissions "$package" || true
+            echo "::endgroup::"
+          done < flatpak.txt
