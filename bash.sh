@@ -1,4 +1,4 @@
-pip install hyperweave
+$ pip install hyperweave
 hyperweave install-hook
 
 python3 -m http.server 8080
