@@ -1,1 +1,1 @@
-
+[![Update README,patch,rebase,merge with recent blog posts](https://github.com/auraecosystem/web4-OS/actions/workflows/update_readme%20.yml/badge.svg)](https://github.com/auraecosystem/web4-OS/actions/workflows/update_readme%20.yml)
