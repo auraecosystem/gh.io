@@ -29,10 +29,10 @@ jobs:
 
     steps:
       - name: Checkout Source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js Runtime
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: 'npm'
@@ -94,13 +94,13 @@ jobs:
 
       # Package Artifact for GitHub Pages
       - name: Package Pages Artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ${{ steps.config.outputs.dist_dir }}
 
       # Package Generic Artifact for Cloud/Web4 Deployments
       - name: Package Generic Build Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: app-production-build
           path: ${{ steps.config.outputs.dist_dir }}
@@ -120,7 +120,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   # -------------------------------------------------------------
   # 3. DEPLOY TO CLOUD (Vercel / Cloudflare)
@@ -134,7 +134,7 @@ jobs:
 
     steps:
       - name: Download Build Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: app-production-build
           path: ./${{ needs.build-and-verify.outputs.dist_dir }}
@@ -161,13 +161,13 @@ jobs:
 
     steps:
       - name: Download Build Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: app-production-build
           path: ./${{ needs.build-and-verify.outputs.dist_dir }}
 
       - name: Deploy to Decentralized IPFS Gateway
-        uses: ipshipyard/ipfs-deploy-action@v1
+        uses: ipshipyard/ipfs-deploy-action@v2
         with:
           path-to-deploy: ./${{ needs.build-and-verify.outputs.dist_dir }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
