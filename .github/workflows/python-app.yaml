@@ -32,9 +32,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
       
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
       
@@ -70,7 +70,7 @@ jobs:
       - run: 7z a postman/app/resources/app/js/scratchpad/scratchpad.js.7z postman/app/resources/app/js/scratchpad/scratchpad.js
 
       - name: Release Files
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           name: "postman v${{ env.VERSION }} js files"
           tag_name: ${{ env.VERSION }}
