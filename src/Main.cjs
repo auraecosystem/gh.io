@@ -1,7 +1,7 @@
-const EventBus = require("../core/Eventbus.cjs");
-const RuntimeController = require("../runtime/Controller.cjs");
-const AiKernel = require("../Kernel/Ai.cjs");
-const StatusHUD = require("../ui/statushud.cjs");
+const EventBus = require("./core/EventBus");
+const RuntimeController = require("./runtime/RuntimeController");
+const AiKernel = require("./kernel/AiKernel");
+const StatusHUD = require("./ui/StatusHUD");
 
 function bootstrap() {
   const bus = new EventBus();
