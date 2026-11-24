@@ -5,7 +5,6 @@ contents: reStructuredText
 page: _site
 --- 
 
-
 ====================
  |reStructuredText|
 ====================
