@@ -1,5 +1,3 @@
-I found that this repository has no README or `pubspec.yaml` at the root, so I’m validating the actual application entry points and source layout before drafting documentation.I’m inspecting the Flutter app, test setup, and supporting documentation, then I’ll replace the README with repository-specific instructions.# Aura Ecosystem
-
 [Visit the published site](https://gh-io.github.io/auraecosystem/) · [Repository](https://github.com/gh-io/auraecosystem)
 
 A multi-platform experimentation repository combining Flutter/Dart examples, web assets, Python utilities, MCP configuration, and evolving ecosystem documentation.
