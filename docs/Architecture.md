@@ -4,7 +4,7 @@ name: Auraecosystem.gh.io
 contents: reStructuredText
 --- 
 
-[Visit the published site](https://gh-io.github.io/auraecosystem/) · [Repository](https://github.com/auraecosystem/gh.io)
+[Visit the published site]([https://gh-io.github.io/Auraecosystem/](https://auraecosystem.github.io)) · [Repository](https://auraecosystem.github.io)
 
 A multi-platform experimentation repository combining Flutter/Dart examples, web assets, Python utilities, MCP configuration, and evolving ecosystem documentation.
 
