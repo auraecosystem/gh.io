@@ -1,153 +1,284 @@
 
 # Aura Ecosystem
 
-A public collection of experiments and reference material around the Aura project, including Flutter/Dart examples, web assets, Python utilities, MCP integration examples, and proposals for AI, quantum computing, and research-oriented spreadsheet formats.
+Experimental Flutter, web, Python, Swift, MCP, and documentation resources for the Aura ecosystem.
 
-The repository is a workbench rather than one integrated application. Components have different maturity levels, and some documents describe proposed features rather than implemented code.
+**Website:** https://gh-io.github.io/auraecosystem/
 
-**Published site:** https://gh-io.github.io/auraecosystem/
+## Overview
 
-## Contents
+Aura Ecosystem is a public collection of prototypes and reference material rather than a single finalized application. It includes:
 
-| Path | Purpose |
-| --- | --- |
-| `lib/main.dart` | Flutter example that fetches album JSON from JSONPlaceholder and displays the title with `FutureBuilder`. |
-| `multi_view_app.dart` | Flutter `MultiViewApp` widget that creates a view for each active `FlutterView`. |
-| `test/fetch_album_test.dart` | Mockito-based tests for successful and failed album requests. |
-| `pub.dev/packages/web/` | Dart source for parsing TypeScript declarations and transforming them into Dart representations. |
-| `src/page.web4.py` | PDF utility that scales pages to 1280×720, removes metadata, compresses content, and writes `web_asset.pdf`. |
-| `static/index.html` | Static HTML page embedding `web_asset.pdf` in a responsive iframe. |
-| `MCPToolsListView.swift` | SwiftUI view for listing, filtering, and enabling MCP tools. |
-| `mcp_config.default.json` | Default MCP configuration with an empty server list. |
-| `GenericsManifesto.md` | Notes and proposals concerning Dart generics. |
-| `LibraryEvolutionManifesto.md` | Material on library evolution and compatibility. |
-| `Docs/`, `docs/`, `indtall.md/` | Project notes and web/documentation content. |
-| `.github/workflows/` | GitHub Pages and notebook CI workflows. |
+- A Flutter album-fetching example
+- Flutter multi-view support
+- HTTP tests using Mockito
+- TypeScript declaration parsing and transformation experiments
+- PDF optimization utilities
+- Static GitHub Pages content
+- MCP configuration and SwiftUI examples
+- Research, quantum-computing, and library-evolution documentation
 
-Additional directories contain imported documentation, web assets, LLM references, development material, and source snapshots.
+Some documents describe proposed features or external projects. They should not be treated as implemented functionality unless corresponding source code is present.
+
+## Technology
+
+- Dart and Flutter
+- Python
+- HTML and JavaScript
+- Swift and SwiftUI
+- C++ and C# source references
+- Jekyll and GitHub Pages
+- PyPDF
+- Jupyter and nbconvert
+- GitHub Actions
+- Model Context Protocol (MCP)
+
+## Repository Structure
+
+```gmi
+lib/
+  main.dart                  Flutter HTTP album example
+
+test/
+  fetch_album_test.dart      Mockito-based album tests
+  docs/                      Testing documentation
+
+src/
+  index.rst                  Documentation source
+  page.web4.py               PDF optimization utility
+
+pub.dev/packages/web/
+                             Dart TypeScript parsing and transformation code
+
+Docs/                        Project documentation
+docs/                        Additional documentation
+static/                      Static web assets
+web.dev/                     Web-development references
+webllms/                     LM Studio and local-model documentation
+llms/                        LLM documentation
+lmstudio.ai/                 LM Studio browser/module artifacts
+dev/                         Development experiments
+tools/                       Development utilities
+
+main.dart                    Standalone Dart HTTP example
+multi_view_app.dart          Flutter multi-view widget
+MCPToolsListView.swift       SwiftUI MCP tools interface
+mcp_config.default.json      Empty MCP server configuration
+flutter_bootstrap.js         Flutter web bootstrap
+requirements.txt             Python dependencies
+bash.sh                      Setup and CI shell instructions
+```
+
+## Flutter Example
+
+`lib/main.dart` demonstrates retrieving an album from JSONPlaceholder:
+
+```dart
+Future<Album> fetchAlbum(http.Client client) async
+```
+
+The app:
+
+1. Sends an HTTP request to `https://jsonplaceholder.typicode.com/albums/1`
+2. Decodes the JSON response into an `Album`
+3. Displays the album title
+4. Displays a loading indicator while waiting
+5. Throws an exception for unsuccessful responses
+
+Run it inside a complete Flutter project with a suitable `pubspec.yaml`:
+
+```bash
+flutter pub get
+flutter run
+```
+
+Run the Flutter tests:
+
+```bash
+flutter test
+```
+
+The repository currently does not include a root `pubspec.yaml`, so the Flutter sources need to be placed in or added to a complete Flutter package before they can be built directly.
+
+## Multi-View Flutter Example
+
+`multi_view_app.dart` defines `MultiViewApp`, a widget that observes the Flutter platform view collection and creates a `View` widget for every active `FlutterView`.
+
+It also:
+
+- Observes platform metric changes
+- Removes or adds views as they change
+- Stores existing view widgets by view ID
+- Renders views through `ViewCollection`
+
+## Tests
+
+`test/fetch_album_test.dart` verifies:
+
+- A `200` response produces an `Album`
+- A `404` response throws an exception
+
+The test uses generated Mockito mock types:
+
+```dart
+@GenerateMocks([], customMocks: [MockSpec<http.Client>(as: #MockHttpClient)])
+```
+
+A generated `fetch_album_test.mocks.dart` file is not included. It must be generated with Mockito/build_runner after configuring a complete Flutter project.
 
 ## PDF Utility
 
-Install Python dependencies plus `pypdf`:
+The utility in `src/page.web4.py` reads `input.pdf`, normalizes each page to 1280×720, removes metadata, compresses content streams, deduplicates objects, and writes `web_asset.pdf`.
+
+Install the dependencies:
 
 ```bash
 python -m pip install -r requirements.txt
 python -m pip install pypdf
 ```
 
-Place `input.pdf` in the repository root, then run:
+Place `input.pdf` in the repository root and run:
 
 ```bash
 python src/page.web4.py
 ```
 
-This creates `web_asset.pdf` in the current working directory. The script:
+Output:
 
-- Scales every page to 1280×720
-- Compresses PDF content streams
-- Removes existing metadata
-- Compresses or deduplicates compatible objects
-- Writes the processed PDF
+```text
+web_asset.pdf
+```
 
-The checked-in `static/index.html` references `web_asset.pdf`; copy the generated file into `static/` before publishing that page.
+`pypdf` is used by the script but is not currently declared in `requirements.txt`.
 
-## Flutter Examples
+The static page `static/index.html` embeds:
 
-The repository includes:
+```html
+<iframe src="web_asset.pdf#toolbar=0&navpanes=0"></iframe>
+```
 
-- `lib/main.dart` — HTTP album fetching and a `FutureBuilder`
-- `main.dart` — standalone Dart HTTP request example
-- `multi_view_app.dart` — multi-view Flutter application support
-- `test/fetch_album_test.dart` — success and failure tests for `fetchAlbum`
+Copy or generate `web_asset.pdf` beside that HTML file before deployment.
 
-A complete Flutter project setup is not currently included. There is no root `pubspec.yaml`, so create or use a Flutter project that declares at minimum:
+## MCP Configuration
 
-- `flutter`
-- `http`
-- `flutter_test`
-- `mockito`
-- `build_runner`
+`mcp_config.default.json` provides an empty MCP server configuration:
 
-The test imports `fetch_album_test.mocks.dart`, but that generated Mockito file is not checked into the repository. Generate it with the appropriate build-runner command after setting up the project dependencies.
+```json
+{
+  "mcpServers": {}
+}
+```
+
+`MCPToolsListView.swift` provides a SwiftUI interface for:
+
+- Listing available MCP servers and tools
+- Searching tools by name or description
+- Persisting server enable/disable state
+- Showing an empty state when no tools are available
+
+The Swift UI is tied to GitHub Copilot MCP types and may require the corresponding host application framework.
+
+## TypeScript-to-Dart Work
+
+`pub.dev/packages/web/` contains Dart source that:
+
+- Parses TypeScript declaration files
+- Reads TypeScript configuration
+- Creates a `TSProgram`
+- Checks semantic, syntactic, and declaration diagnostics
+- Transforms declarations into Dart namespace, class, interface, enum, method, property, and function representations
+- Handles TypeScript exports and nested namespaces
+
+This is an experimental source snapshot and is not a complete standalone package checkout.
 
 ## GitHub Pages
 
-The repository publishes static content through GitHub Pages:
+The repository is published at:
 
 https://gh-io.github.io/auraecosystem/
 
-Two workflows are available:
+Three GitHub Actions workflows are included:
 
-- `static.yml` — uploads the repository contents as a Pages artifact
-- `jekyll.yml` — builds and deploys a Jekyll site
+### Static deployment
 
-The static workflow deploys the entire repository rather than a dedicated build directory.
+`.github/workflows/static.yml` uploads the entire repository and deploys it as a GitHub Pages artifact.
 
-## Notebook CI
+### Jekyll deployment
 
-`.github/workflows/notebook-ci.yml` installs Python requirements and Jupyter, then attempts to execute:
+`.github/workflows/jekyll.yml` builds a Jekyll site with Ruby and deploys the generated site.
+
+### Notebook CI
+
+`.github/workflows/notebook-ci.yml` installs Python dependencies and executes:
 
 ```text
 notebook/Notebook.ipynb
 ```
 
-That notebook is not currently present in the repository, so update the workflow with a valid notebook path or add the missing notebook before expecting this job to pass.
+That notebook is not present in the current repository, so the workflow currently needs a valid notebook path or a checked-in notebook before it can pass.
 
-## Project Notes
+## Documentation Status
 
-Several documents describe:
+Several Markdown and RST files describe projects and concepts including:
 
-- An Aura XLSL/Excel-compatible research ecosystem
+- Aura XLSL spreadsheet formats
 - Quantum circuit simulation
-- Drag-and-drop quantum gates
-- Multi-qubit visualization
-- AI and quantum pipelines
-- Lifespan analysis
-- Spreadsheet-based data, simulation, and reasoning formats
+- Local AI model tooling
+- LM Studio APIs and CLI commands
+- Dart generics
+- Library evolution
+- Research, healthcare, economics, and environment data sheets
 
-These documents are proposals and design notes unless corresponding implementation files are present. Verify setup instructions and feature claims against the code before using them as operational guides.
+Many of these documents contain proposed designs or imported reference material. Confirm behavior against the associated source code before relying on the documentation as implementation guidance.
 
-## Known Repository Characteristics
+## Python Dependencies
 
-- No unified build manifest or application entry point
+The declared requirements are:
+
+```text
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.6
+seaborn>=0.12
+ipython
+notebook
+nbconvert
+pytest
+nbval
+```
+
+Install them with:
+
+```bash
+python -m pip install -r requirements.txt
+python -m pip install pypdf
+```
+
+## Repository Caveats
+
+The checkout has some incomplete boundaries:
+
 - No root `pubspec.yaml`
-- No repository-level `LICENSE`
+- No generated Mockito mock file
+- No complete notebook CI target
+- No consolidated `pyproject.toml`
+- No declared software license
 - No formal contribution guide
-- Several large or experimental directories contain imported or reference material
-- Python utilities may require dependencies not listed in `requirements.txt`
-- The notebook CI workflow references a missing notebook
+- A mix of implemented examples, documentation drafts, and external source/reference material
+- No implemented full Aura quantum application or workbook pipeline in the current tree
 
 ## Contributing
 
-Keep changes focused on one example or documentation area. For new runnable components:
+Before changing a component:
 
-1. Add a complete package or build manifest.
-2. Document required software and environment variables.
-3. Include setup and test commands.
-4. Avoid placing experiments in directories without identifying their status.
-5. Add tests for executable Dart or Flutter behavior.
+1. Identify whether it is an executable example or reference material.
+2. Keep experimental code isolated from complete examples.
+3. Add package/build manifests for newly runnable applications.
+4. Document required environment variables and external services.
+5. Add tests for HTTP, Dart, and Flutter behavior.
+6. Update workflows when notebook or source paths change.
 
 ## License
 
-No license is currently declared in this repository. Obtain permission from the maintainers before redistributing or commercially using the contents.
+No license file or license metadata is currently declared. Obtain permission from the maintainers before redistributing or commercially using the repository contents.
 ```
-lib/
-  main.dart              Flutter app with HTTP fetching and FutureBuilder
-
-test/
-  fetch_album_test.dart  Album fetch success and failure tests
-
-src/
-  index.rst              Sphinx-style source documentation
-  page.web4.py           PDF web-optimization utility
-
-docs/                    Additional documentation
-Docs/                    Documentation material
-dev/                     Development resources
-tools/                   Development tools
-llms/                    LLM-related resources
-lmstudio.ai/             LM Studio-related assets
-pub.dev/                 Pub-related resources
-web.dev/                 Web-development resources
-webllms/                 Web/LLM resources
-static/                  Static assets
