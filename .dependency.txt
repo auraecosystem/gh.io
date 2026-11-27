@@ -1,0 +1,9 @@
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.6
+seaborn>=0.12
+ipython
+notebook
+nbconvert
+pytest
+nbval
